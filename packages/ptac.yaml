@@ -1,0 +1,1341 @@
+# - =========================================
+# - MQTT
+# - =========================================
+mqtt:
+  # - =========================================
+  # - MQTT Numbers
+  # - =========================================
+  number:
+    - name: PTAC MUA Fan Cfm
+      unique_id: ptac_muafancfm
+      command_topic: "geappliances/PTAC/erd/0x7465/write"
+      command_template: "{{ '%04x' % (value)|int(0) }}"
+      state_topic: "geappliances/PTAC/erd/0x7464/value"
+      value_template: "{{ (value[:4]|int(base=16)) }}"
+      unit_of_measurement: "CFM"
+      min: 0
+      max: 70
+      mode: box
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Heating Target Temperature
+      unique_id: ptac_heating_target_temperature
+      command_topic: "geappliances/PTAC/erd/0x7707/write"
+      command_template: "{{ '%04x' % ((value* 10)|int(0) ) }}"
+      state_topic: "geappliances/PTAC/erd/0x7706/value"
+      value_template: "{{ ((value|int(base=16)) / 10) }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      min: 60
+      max: 85
+      mode: box
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Cooling Target Temperature
+      unique_id: ptac_cooling_target_temperature
+      command_topic: "geappliances/PTAC/erd/0x770a/write"
+      command_template: "{{ '%04x' % ((value * 10)|int(0)) }}"
+      state_topic: "geappliances/PTAC/erd/0x7709/value"
+      value_template: "{{ ((value|int(base=16)) / 10) }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      min: 60
+      max: 85
+      mode: box
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Switches
+  # - =========================================
+  switch:
+    - name: Local Control Power Status
+      unique_id: ptac_localcontrolpowerstatus
+      command_topic: "geappliances/PTAC/erd/0x7701/write"
+      state_topic: "geappliances/PTAC/erd/0x7700/value"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Freeze Sentinel
+      unique_id: ptac_freezesentinel
+      command_topic: "geappliances/PTAC/erd/0x7455/write"
+      state_topic: "geappliances/PTAC/erd/0x7454/value"
+      value_template: "{{ value[:2]|string }}"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Overheat Sentinel
+      unique_id: ptac_overheatsentinel
+      command_topic: "geappliances/PTAC/erd/0x7457/write"
+      state_topic: "geappliances/PTAC/erd/0x7456/value"
+      value_template: "{{ value[:2]|string }}"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Constant Fan
+      unique_id: ptac_constantfan
+      command_topic: "geappliances/PTAC/erd/0x7459/write"
+      state_topic: "geappliances/PTAC/erd/0x7458/value"
+      value_template: "{{ value[:2]|string }}"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: External Thermostat
+      unique_id: ptac_externalthermostat
+      command_topic: "geappliances/PTAC/erd/0x745b/write"
+      state_topic: "geappliances/PTAC/erd/0x745a/value"
+      value_template: "{{ value[:2]|string }}"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Boost Fan
+      unique_id: ptac_boostfan
+      command_topic: "geappliances/PTAC/erd/0x745d/write"
+      state_topic: "geappliances/PTAC/erd/0x745c/value"
+      value_template: "{{ value[:2]|string }}"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Muam Occupancy Control Enabled
+      unique_id: ptac_mualockoutenabled
+      command_topic: "geappliances/PTAC/erd/0x7469/write"
+      state_topic: "geappliances/PTAC/erd/0x7468/value"
+      value_template: "{{ value[:2]|string }}"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Electric Heat Lockout - Strict
+      unique_id: ptac_electricheatlockout
+      command_topic: "geappliances/PTAC/erd/0x7461/write"
+      state_topic: "geappliances/PTAC/erd/0x7460/value"
+      value_template: "{{ value[:2]|string }}"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Select
+  # - =========================================
+  select:
+    - name: Local Control System Mode
+      unique_id: ptac_local_control_systemmode
+      command_topic: "geappliances/PTAC/erd/0x7703/write"
+      command_template: >
+        {% set map = {
+        'Heat': '1',
+        'Fan': '2',
+        'Cool': '3',
+        } %}
+        {% set output = map[value] if value in map %}
+        {{ '%02x' % (output)|int(0) }}
+      state_topic: "geappliances/PTAC/erd/0x7702/value"
+      value_template: >
+        {% set map = {
+        '1': 'Heat',
+        '2': 'Fan',
+        '3': 'Cool',
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      options:
+        - "Heat"
+        - "Fan"
+        - "Cool"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Local Control Cooling Fan Mode
+      unique_id: ptac_localcontrol_coolingfanmode
+      command_topic: "geappliances/PTAC/erd/0x771f/write"
+      command_template: >
+        {% set map = {
+        'Low': '0',
+        'High': '1',
+        } %}
+        {% set output = map[value] if value in map %}
+        {{ '%02x' % (output)|int(0) }}
+      state_topic: "geappliances/PTAC/erd/0x771e/value"
+      value_template: >
+        {% set map = {
+        '0': 'Low',
+        '1': 'High',
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      options:
+        - "Low"
+        - "High"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Local Control Heating Fan Mode
+      unique_id: ptac_localcontrol_heatingfanmode
+      command_topic: "geappliances/PTAC/erd/0x7719/write"
+      command_template: >
+        {% set map = {
+        'Low': '0',
+        'High': '1',
+        } %}
+        {% set output = map[value] if value in map %}
+        {{ '%02x' % (output)|int(0) }}
+      state_topic: "geappliances/PTAC/erd/0x7718/value"
+      value_template: >
+        {% set map = {
+        '0': 'Low',
+        '1': 'High',
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      options:
+        - "Low"
+        - "High"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Local Control Fan Only Fan Mode
+      unique_id: ptac_localcontrol_fanonlyfanmode
+      command_topic: "geappliances/PTAC/erd/0x771c/write"
+      command_template: >
+        {% set map = {
+        'Low': '0',
+        'High': '1',
+        } %}
+        {% set output = map[value] if value in map %}
+        {{ '%02x' % (output)|int(0) }}
+      state_topic: "geappliances/PTAC/erd/0x771b/value"
+      value_template: >
+        {% set map = {
+        '0': 'Low',
+        '1': 'High',
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      options:
+        - "Low"
+        - "High"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Heat Selector
+      unique_id: ptac_heatselector
+      command_topic: "geappliances/PTAC/erd/0x745f/write"
+      command_template: >
+        {% set map = {
+        'Electric Heat Only': '0',
+        'High Demand': '1',
+        'Hybrid': '2',
+        'Boost Heat Pump': '3',
+        'Heat Pump Only': '4'
+        } %}
+        {% set output = map[value] if value in map %}
+        {{ '%02x' % (output)|int(0) }}
+      state_topic: "geappliances/PTAC/erd/0x745e/value"
+      value_template: >
+        {% set map = {
+        '0': 'Electric Heat Only',
+        '1': 'High Demand',
+        '2': 'Hybrid',
+        '3': 'Boost Heat Pump',
+        '4': 'Heat Pump Only'
+        } %}
+        {% set state = value[:2]|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      options:
+        - "Electric Heat Only"
+        - "High Demand"
+        - "Hybrid"
+        - "Boost Heat Pump"
+        - "Heat Pump Only"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Dehum Mode
+      unique_id: ptac_dehummode
+      command_topic: "geappliances/PTAC/erd/0x746b/write"
+      command_template: >
+        {% set map = {
+        'Off': '0',
+        'Low': '1',
+        'Standard': '2',
+        'High': '3'
+        } %}
+        {% set output = map[value] if value in map %}
+        {{ '%02x' % (output)|int(0) }}
+      state_topic: "geappliances/PTAC/erd/0x746a/value"
+      value_template: >
+        {% set map = {
+        '0': 'Off',
+        '1': 'Low',
+        '2': 'Standard',
+        '3': 'High'
+        } %}
+        {% set state = value[:2]|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      options:
+        - "Off"
+        - "Low"
+        - "Standard"
+        - "High"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Smart Fan Cooling
+      unique_id: ptac_smartfancooling
+      command_topic: "geappliances/PTAC/erd/0x7451/write"
+      command_template: >
+        {% set map = {
+        'Cyclic': '0',
+        'Continuous': '1'
+        } %}
+        {% set output = map[value] if value in map %}
+        {{ '%02x' % (output)|int(0) }}
+      state_topic: "geappliances/PTAC/erd/0x7450/value"
+      value_template: >
+        {% set map = {
+        '0': 'Cyclic',
+        '1': 'Continuous'
+        } %}
+        {% set state = value[:2]|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      options:
+        - "Cyclic"
+        - "Continuous"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Smart Fan Heating
+      unique_id: ptac_smartfanheating
+      command_topic: "geappliances/PTAC/erd/0x7453/write"
+      command_template: >
+        {% set map = {
+        'Cyclic': '0',
+        'Continuous': '1'
+        } %}
+        {% set output = map[value] if value in map %}
+        {{ '%02x' % (output)|int(0) }}
+      state_topic: "geappliances/PTAC/erd/0x7452/value"
+      value_template: >
+        {% set map = {
+        '0': 'Cyclic',
+        '1': 'Continuous'
+        } %}
+        {% set state = value[:2]|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      options:
+        - "Cyclic"
+        - "Continuous"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: CDC Configuration
+      unique_id: ptac_cdcconfig
+      command_topic: "geappliances/PTAC/erd/0x746d/write"
+      command_template: >
+        {% set map = {
+        'Central Desk Control': '0',
+        'Occupancy': '1'
+        } %}
+        {% set output = map[value] if value in map %}
+        {{ '%02x' % (output)|int(0) }}
+      state_topic: "geappliances/PTAC/erd/0x746c/value"
+      value_template: >
+        {% set map = {
+        '0': 'Central Desk Control',
+        '1': 'Occupancy'
+        } %}
+        {% set state = value[:2]|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      options:
+        - "Central Desk Control"
+        - "Occupancy"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Make-up Air Filter Setting
+      unique_id: ptac_cdcconfig
+      command_topic: "geappliances/PTAC/erd/0x7467/write"
+      command_template: >
+        {% set map = {
+        'No Filter': '0',
+        'MERV13 Filter': '1'
+        } %}
+        {% set output = map[value] if value in map %}
+        {{ '%02x' % (output)|int(0) }}
+      state_topic: "geappliances/PTAC/erd/0x7466/value"
+      value_template: >
+        {% set map = {
+        '0': 'No Filter',
+        '1': 'MERV13 Filter'
+        } %}
+        {% set state = value[:2]|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      options:
+        - "No Filter"
+        - "MERV13 Filter"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+#   # - =========================================
+#   # - MQTT Sensors
+#   # - =========================================
+  sensor:
+    - name: Model Number
+      unique_id: ptac_modelnumber
+      state_topic: "geappliances/PTAC/erd/0x0001/value"
+      value_template: >
+        {%- set line = value %}
+        {%- set chars = " !'#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~" %}
+        {%- set n = 2 %}
+        {%- set ns = namespace(value='') %}
+        {%- for i in range(0, line | length, n) %}
+            {%- set c = chars[line[i:i+n] | int('', 16) - 32 ] %}
+            {%- if c is defined -%}
+                {%- if c != "_" -%}
+                    {%- set ns.value = ns.value ~ c -%}
+                {%- endif -%}
+            {%- endif -%}
+        {%- endfor %}
+        {{ ns.value }}
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Serial Number
+      unique_id: ptac_serialnumber
+      state_topic: "geappliances/PTAC/erd/0x0002/value"
+      value_template: >
+        {%- set line = value %}
+        {%- set chars = " !'#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~" %}
+        {%- set n = 2 %}
+        {%- set ns = namespace(value='') %}
+        {%- for i in range(0, line | length, n) %}
+            {%- set c = chars[line[i:i+n] | int('', 16) - 32 ] %}
+            {%- if c is defined -%}
+                {%- if c != "_" -%}
+                    {%- set ns.value = ns.value ~ c -%}
+                {%- endif -%}
+            {%- endif -%}
+        {%- endfor %}
+        {{ ns.value }}
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Appliance Type
+      unique_id: ptac_appliancetype
+      state_topic: "geappliances/PTAC/erd/0x0008/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "Water Heater",
+          "1": "Clothes Dryer",
+          "2": "Clothes Washer",
+          "3": "Refrigerator",
+          "4": "Microwave",
+          "5": "Advantium",
+          "6": "Dishwasher",
+          "7": "Oven",
+          "8": "Electric Range",
+          "9": "Gas Range",
+          "10": "Thermostat/RAC",
+          "11": "Electric Cooktop",
+          "12": "Pizza Oven",
+          "13": "Gas Cooktop",
+          "14": "Split / DFS (Duct-Free Split) AC",
+          "15": "Hood",
+          "16": "Point of Entry Water Filter",
+          "17": "Induction Cooktop",
+          "18": "Delivery Box",
+          "19": "Kitchen Hub Vent Hood",
+          "20": "PTAC/PTAC",
+          "21": "Water Softener",
+          "22": "Portable AC",
+          "23": "Combination Washer Dryer",
+          "24": "Dual Zone Wine Chiller",
+          "25": "Beverage Center",
+          "26": "Coffee Brewer",
+          "27": "Opal Nugget Ice Maker",
+          "28": "In-Home Grower",
+          "29": "Dehumidifer",
+          "30": "Under Counter Ice Maker",
+          "31": "Through Wall AC",
+          "32": "F&P DishDrawer",
+          "33": "Espresso Coffee Maker",
+          "34": "Toaster Oven",
+          "35": "PTAC/Vertical",
+          "36": "Central DFS (Duct-Free Split) Controller",
+          "37": "BLE Mesh Gateway",
+          "38": "Stand Mixer",
+          "39": "Fisher & Paykel Cooktop",
+          "40": "F&P Cooktop Teppanyaki",
+          "41": "F&P Ventilation Downdraft",
+          "42": "Smart Plug",
+          "43": "Smoker",
+          "44": "Air Handler VRF",
+          "45": "Fabric Care Cabinet Closet",
+          "46": "Laundry Center",
+          "255": "Unknown"
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Software Application Version
+      unique_id: ptac_softwareapplicationversion
+      state_topic: "geappliances/PTAC/erd/0x003a/value"
+      value_template: >
+        {% set critical_major = value[:2]|int(base=16) %}
+        {% set critical_minor = value[2:4]|int(base=16) %}
+        {% set noncritical_major = value[4:6]|int(base=16) %}
+        {% set noncritical_minor = value[6:8]|int(base=16) %}
+        {{ critical_major|string + "." + critical_minor|string + "." + noncritical_major|string + "." + noncritical_minor|string }}
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Software Parametric Version
+      unique_id: ptac_softwareparametricversion
+      state_topic: "geappliances/PTAC/erd/0x003b/value"
+      value_template: >
+        {% set critical_major = value[:2]|int(base=16) %}
+        {% set critical_minor = value[2:4]|int(base=16) %}
+        {% set noncritical_major = value[4:6]|int(base=16) %}
+        {% set noncritical_minor = value[6:8]|int(base=16) %}
+        {{ critical_major|string + "." + critical_minor|string + "." + noncritical_major|string + "." + noncritical_minor|string }}
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Software Auxiliary Version
+      unique_id: ptac_softwarauxiliaryversion
+      state_topic: "geappliances/PTAC/erd/0x003c/value"
+      value_template: >
+        {% set critical_major = value[:2]|int(base=16) %}
+        {% set critical_minor = value[2:4]|int(base=16) %}
+        {% set noncritical_major = value[4:6]|int(base=16) %}
+        {% set noncritical_minor = value[6:8]|int(base=16) %}
+        {{ critical_major|string + "." + critical_minor|string + "." + noncritical_major|string + "." + noncritical_minor|string }}
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Software Git Hash
+      unique_id: ptac_softwaregithash
+      state_topic: "geappliances/PTAC/erd/0x007f/value"
+      value_template: "{{ value[:7] }}"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Reset Count
+      unique_id: ptac_resetcount
+      state_topic: "geappliances/PTAC/erd/0x0700/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Power Cord Type
+      unique_id: ptac_powercordtype
+      state_topic: "geappliances/PTAC/erd/0x7011/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "Invalid",
+          "1": "15A",
+          "2": "20A",
+          "3": "30A"
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Local Ambient Temp
+      unique_id: ptac_localambient
+      state_topic: "geappliances/PTAC/erd/0x7100/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Indoor Coil Temp
+      unique_id: ptac_indoorcoil
+      state_topic: "geappliances/PTAC/erd/0x7101/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Outdoor Ambient Temp
+      unique_id: ptac_outdoorambient
+      state_topic: "geappliances/PTAC/erd/0x7102/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Outdoor Coil Temp
+      unique_id: ptac_outdoorcoil
+      state_topic: "geappliances/PTAC/erd/0x7103/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Indoor Ambient Processed Temp
+      unique_id: ptac_indoorambientprocessed
+      state_topic: "geappliances/PTAC/erd/0x7104/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Indoor Outlet Temp
+      unique_id: ptac_indooroutlet
+      state_topic: "geappliances/PTAC/erd/0x7106/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Indoor Coil Vapor Temp
+      unique_id: ptac_indoorcoilvapor
+      state_topic: "geappliances/PTAC/erd/0x7108/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Relative Humidity
+      unique_id: ptac_relativehumidity
+      state_topic: "geappliances/PTAC/erd/0x710b/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "%"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Suction Temp
+      unique_id: ptac_suction
+      state_topic: "geappliances/PTAC/erd/0x710c/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Outdoor Coil Liquid Temperature
+      unique_id: ptac_outdoorcoilliquid
+      state_topic: "geappliances/PTAC/erd/0x710d/value"
+      value_template: >
+        {% set output = (value|int(base=16)) %}
+        {%- if output > 32767 -%}
+            {{ (output - 65535) / 10 }}
+        {%- else -%}
+            {{ output / 10 }}
+        {%- endif -%}
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Dewpoint
+      unique_id: ptac_dewpoint
+      state_topic: "geappliances/PTAC/erd/0x7118/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Indoor Fan Actual Speed
+      unique_id: ptac_indoorfanactual
+      state_topic: "geappliances/PTAC/erd/0x7130/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "rpm"
+      device_class: "wind_speed"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Outdoor Fan Actual Speed
+      unique_id: ptac_outdoorfanactual
+      state_topic: "geappliances/PTAC/erd/0x7131/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "rpm"
+      device_class: "wind_speed"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Indoor Fan Target Speed
+      unique_id: ptac_indoorfantarget
+      state_topic: "geappliances/PTAC/erd/0x7132/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "rpm"
+      device_class: "wind_speed"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Outdoor Fan Target Speed
+      unique_id: ptac_outdoorfantarget
+      state_topic: "geappliances/PTAC/erd/0x7133/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "rpm"
+      device_class: "wind_speed"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Indoor Fan Pwm
+      unique_id: ptac_indoorfanpwm
+      state_topic: "geappliances/PTAC/erd/0x7134/value"
+      value_template: "{{ (value|int(base=16))/100 }}"
+      unit_of_measurement: "%"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Outdoor Fan Pwm
+      unique_id: ptac_outdoorfanpwm
+      state_topic: "geappliances/PTAC/erd/0x7135/value"
+      value_template: "{{ (value|int(base=16))/100 }}"
+      unit_of_measurement: "%"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Mua Fan Rpm
+      unique_id: ptac_muafanrpm
+      state_topic: "geappliances/PTAC/erd/0x750b/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "rpm"
+      device_class: "wind_speed"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: EEV Control Type
+      unique_id: ptac_eevcontroltype
+      state_topic: "geappliances/PTAC/erd/0x7511/value"
+      value_template: >
+        {% set map = {
+        '0': 'Idle',
+        '1': 'Linear',
+        '2': 'Constant',
+        '3': 'Pi Control',
+        '4': 'Pi Control High Gain'
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device_class: "enum"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: EEV Desired Position
+      unique_id: ptac_eevdesiredposition
+      state_topic: "geappliances/PTAC/erd/0x7512/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "steps"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: EEV Actual Position
+      unique_id: ptac_eevactualposition
+      state_topic: "geappliances/PTAC/erd/0x7514/value"
+      value_template: >
+        {% set output = (value|int(base=16)) %}
+        {%- if output > 32767 -%}
+            {{ (output - 65535) }}
+        {%- else -%}
+            {{ output }}
+        {%- endif -%}
+      unit_of_measurement: "steps"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: EEV Superheat Target
+      unique_id: ptac_eevsuperheattarget
+      state_topic: "geappliances/PTAC/erd/0x7516/value"
+      value_template: >
+        {% set output = (value|int(base=16)) %}
+        {%- if output > 32767 -%}
+            {{ (output - 65535)/10 }}
+        {%- else -%}
+            {{ output/10 }}
+        {%- endif -%}
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: EEV Superheat Actual
+      unique_id: ptac_eevsuperheatactual
+      state_topic: "geappliances/PTAC/erd/0x7517/value"
+      value_template: >
+        {% set output = (value|int(base=16)) %}
+        {%- if output > 32767 -%}
+            {{ (output - 65535)/10 }}
+        {%- else -%}
+            {{ output/10 }}
+        {%- endif -%}
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Compressor Actual Rpm
+      unique_id: ptac_compressoractualrpm
+      state_topic: "geappliances/PTAC/erd/0x7601/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "rpm"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Compressor Target Rpm
+      unique_id: ptac_compressortargetrpm
+      state_topic: "geappliances/PTAC/erd/0x7602/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "rpm"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Inverter Watts
+      unique_id: ptac_inverterwatts
+      state_topic: "geappliances/PTAC/erd/0x7610/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "W"
+      device_class: "power"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: IGBT Temp
+      unique_id: ptac_igbttemp
+      state_topic: "geappliances/PTAC/erd/0x7612/value"
+      value_template: "{{ (((value|int(base=16))/10)*9/5+32)|round(2) }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+#   # - =========================================
+#   # - MQTT Binary Sensors
+#   # - =========================================
+  binary_sensor:
+    - name: Ready To Enter Bootloader
+      unique_id: ptac_readytoenterbootloader
+      state_topic: "geappliances/PTAC/erd/0x0030/value"
+      value_template: "{{ value|int(base=16) }}"
+      payload_on: "3"
+      payload_off: "2"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Compressor Active
+      unique_id: ptac_compressoractive
+      state_topic: "geappliances/PTAC/erd/0x7603/value"
+      payload_on: "01"
+      payload_off: "00"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Relay 1kW
+      unique_id: ptac_relaystate_1kW
+      state_topic: "geappliances/PTAC/erd/0x7010/value"
+      value_template: >
+        {% set decimal = value|int(base=16) %}
+        {% set binary_value = "{:0=16b}".format(decimal) %}
+        {{ binary_value[7] }}
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Relay 1.5kW
+      unique_id: ptac_relaystate_1_5kW
+      state_topic: "geappliances/PTAC/erd/0x7010/value"
+      value_template: >
+        {% set decimal = value|int(base=16) %}
+        {% set binary_value = "{:0=16b}".format(decimal) %}
+        {{ binary_value[6] }}
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Relay 2.5kW
+      unique_id: ptac_relaystate_2_5kW
+      state_topic: "geappliances/PTAC/erd/0x7010/value"
+      value_template: >
+        {% set decimal = value|int(base=16) %}
+        {% set binary_value = "{:0=16b}".format(decimal) %}
+        {{ binary_value[5] }}
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Relay Compressor
+      unique_id: ptac_relaystate_compressor
+      state_topic: "geappliances/PTAC/erd/0x7010/value"
+      value_template: >
+        {% set decimal = value|int(base=16) %}
+        {% set binary_value = "{:0=16b}".format(decimal) %}
+        {{ binary_value[4] }}
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Relay Reversing Valve
+      unique_id: ptac_relaystate_reversingvalve
+      state_topic: "geappliances/PTAC/erd/0x7010/value"
+      value_template: >
+        {% set decimal = value|int(base=16) %}
+        {% set binary_value = "{:0=16b}".format(decimal) %}
+        {{ binary_value[3] }}
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Relay Icr
+      unique_id: ptac_relaystate_icrrelay
+      state_topic: "geappliances/PTAC/erd/0x7010/value"
+      value_template: >
+        {% set decimal = value|int(base=16) %}
+        {% set binary_value = "{:0=16b}".format(decimal) %}
+        {{ binary_value[2] }}
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Relay DLB
+      unique_id: ptac_relaystate_dlb
+      state_topic: "geappliances/PTAC/erd/0x7010/value"
+      value_template: >
+        {% set decimal = value|int(base=16) %}
+        {% set binary_value = "{:0=16b}".format(decimal) %}
+        {{ binary_value[1] }}
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Relay External Fan
+      unique_id: ptac_relaystate_externalfan
+      state_topic: "geappliances/PTAC/erd/0x7010/value"
+      value_template: >
+        {% set decimal = value|int(base=16) %}
+        {% set binary_value = "{:0=16b}".format(decimal) %}
+        {{ binary_value[0] }}
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Relay UVC
+      unique_id: ptac_relaystate_UVC
+      state_topic: "geappliances/PTAC/erd/0x7010/value"
+      value_template: >
+        {% set decimal = value|int(base=16) %}
+        {% set binary_value = "{:0=16b}".format(decimal) %}
+        {{ binary_value[15] }}
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+    - name: Relay 24VAC Select
+      unique_id: ptac_relaystate_24vacselect
+      state_topic: "geappliances/PTAC/erd/0x7010/value"
+      value_template: >
+        {% set decimal = value|int(base=16) %}
+        {% set binary_value = "{:0=16b}".format(decimal) %}
+        {{ binary_value[14] }}
+      payload_on: "1"
+      payload_off: "0"
+      device:
+        name: "PTAC"
+        identifiers: "PTAC"
+        manufacturer: "GE Appliances"
+
+#   # - =========================================
+#   # - Extra Template Sensors
+#   # - =========================================
+
+sensor:
+- platform: template
+  sensors:
+    ptac_outlet_relativehumidity_estimated:
+      friendly_name: "PTAC Outlet Relative Humidity Estimated"
+      unit_of_measurement: "%"
+      device_class: humidity
+      value_template: >
+        {% set indoor_outlet_C = (states('sensor.minisplit_ptac_indoor_outlet')|float(0) - 32) * 5/9  %}
+        {% set indoor_dewpoint_C = (states('sensor.minisplit_ptac_indoor_coil')|float(0) - 32) * 5/9  %}
+        {% if indoor_outlet_C < indoor_dewpoint_C -%}
+          100
+        {%- else -%}
+          {% set term1 = 2.7182818 ** (( 17.625 * indoor_dewpoint_C ) / ( 243.04 + indoor_dewpoint_C )) %}
+          {% set term2 = 2.7182818 ** (( 17.625 * indoor_outlet_C ) / ( 243.04 + indoor_outlet_C )) %}
+          {{ min( (term1 / term2 * 100)|round(1), 100) }}
+        {%- endif %}
+
+- platform: template
+  sensors:
+    ptac_inlet_enthalpy:
+      friendly_name: "PTAC Inlet Enthalpy"
+      unit_of_measurement: "kJ/kg"
+      value_template: >
+        {% set patm = 101325  %}
+        {% set c_to_k = 273.15 %}
+        {% set e = 2.71828 %}
+        {% set inlet_temperature_C = (states('sensor.ptac_ptac_local_ambient')|float(0) - 32) * 5/9 %}
+        {% set inlet_RH = states('sensor.ptac_relative_humidity')|float(0) %}
+
+        {% set T = inlet_temperature_C + c_to_k %}
+        {% set c1 = -5.6745359e03 %}
+        {% set c2 = 6.3925247e00 %}
+        {% set c3 = -9.6778430e-03 %}
+        {% set c4 = 6.2215701e-07 %}
+        {% set c5 = 2.0747825e-09 %}
+        {% set c6 = -9.4840240e-13 %}
+        {% set c7 = 4.1635019e00 %}
+        {% set c8 = -5.8002206e03 %}
+        {% set c9 = 1.3914993e00 %}
+        {% set c10 = -4.8640239e-02 %}
+        {% set c11 = 4.1764768e-05 %}
+        {% set c12 = -1.4452093e-08 %}
+        {% set c13 = 6.5459673e00 %}
+
+        {% if T < c_to_k -%}
+          {% set p_ws = e**(c1 / T + c2 + c3 * T + c4 * T**2 + c5 * T**3 + c6 * T**4 + c7 * log(T)) %}
+        {%- else -%}
+          {% set p_ws = e**(c8 / T + c9 + c10 * T + c11 * T**2 + c12 * T**3 + c13 * log(T)) %}
+        {%- endif %}
+
+        {% set p_w = inlet_RH / 100 * p_ws %}
+        {% set W = 0.621945 * p_w / (patm - p_w) %}
+        {{ (1.006 * inlet_temperature_C + W * (2501 + 1.86 * inlet_temperature_C))|round(2) }}
+
+- platform: template
+  sensors:
+    ptac_outlet_enthalpy:
+      friendly_name: "PTAC Outlet Enthalpy"
+      unit_of_measurement: "kJ/kg"
+      value_template: >
+        {% set patm = 101325  %}
+        {% set c_to_k = 273.15 %}
+        {% set e = 2.71828 %}
+        {% set inlet_temperature_C = (states('sensor.minisplit_ptac_indoor_outlet')|float(0) - 32) * 5/9 %}
+        {% set inlet_RH = states('sensor.ptac_outlet_relativehumidity_estimated')|float(0) %}
+
+        {% set T = inlet_temperature_C + c_to_k %}
+        {% set c1 = -5.6745359e03 %}
+        {% set c2 = 6.3925247e00 %}
+        {% set c3 = -9.6778430e-03 %}
+        {% set c4 = 6.2215701e-07 %}
+        {% set c5 = 2.0747825e-09 %}
+        {% set c6 = -9.4840240e-13 %}
+        {% set c7 = 4.1635019e00 %}
+        {% set c8 = -5.8002206e03 %}
+        {% set c9 = 1.3914993e00 %}
+        {% set c10 = -4.8640239e-02 %}
+        {% set c11 = 4.1764768e-05 %}
+        {% set c12 = -1.4452093e-08 %}
+        {% set c13 = 6.5459673e00 %}
+
+        {% if T < c_to_k -%}
+          {% set p_ws = e**(c1 / T + c2 + c3 * T + c4 * T**2 + c5 * T**3 + c6 * T**4 + c7 * log(T)) %}
+        {%- else -%}
+          {% set p_ws = e**(c8 / T + c9 + c10 * T + c11 * T**2 + c12 * T**3 + c13 * log(T)) %}
+        {%- endif %}
+
+        {% set p_w = inlet_RH / 100 * p_ws %}
+        {% set W = 0.621945 * p_w / (patm - p_w) %}
+        {{ (1.006 * inlet_temperature_C + W * (2501 + 1.86 * inlet_temperature_C))|round(2) }}
+
+- platform: template
+  sensors:
+    ptac_indoor_cfm:
+      unique_id: 'ptac_indoor_cfmf'
+      friendly_name: "PTAC Indoor Airflow"
+      unit_of_measurement: "CFM"
+      value_template: >
+        {% if states('sensor.ptac_appliance_type') == 'PTAC/Vertical' -%}
+          {{ states('sensor.minisplit_ptac_indoor_fan_actual_speed') | float(0) / 740 * 380 }}
+        {%- elif states('sensor.ptac_appliance_type') == 'PTAC/PTAC' -%}
+          {{ states('sensor.minisplit_ptac_indoor_fan_actual_speed') | float(0) / 1000 * 400 }}
+        {%- else -%}
+           -1
+        {% endif %}
+
+- platform: template
+  sensors:
+    ptac_indoor_total_capacity:
+      friendly_name: "PTAC Indoor Total Capacity"
+      unique_id: 'ptac_indoor_total_capacity'
+      unit_of_measurement: 'BTU/hr'
+      value_template: >
+        {% if states('sensor.minisplit_ptac_indoor_fan_actual_speed')|int > 0 -%}
+            {{ (states('sensor.ptac_indoor_cfm')|float(0) * 1.7 *1.193513 * -1 * (states('sensor.ptac_outlet_enthalpy')|float(0) - states('sensor.ptac_inlet_enthalpy')|float(0))) |int }}
+        {%- else -%}
+            0
+        {%- endif %}
+
+- platform: template
+  sensors:
+    ptac_indoor_cop:
+      friendly_name: "PTAC Indoor COP"
+      unique_id: 'ptac_indoor_cop'
+      value_template: >
+        {% if states('sensor.ptac_ac_watts')|int > 0 -%}
+            {{ (states('sensor.ptac_indoor_total_capacity')|float(0) / states('sensor.ptac_ac_watts')|float(0) / 3.412)|round(2) }}
+        {%- else -%}
+            0
+        {%- endif %}
+
+
+- platform: template
+  sensors:
+    ptac_outlet_absolutehumidity:
+      friendly_name: "PTAC Outlet Absolute Humidity"
+      unique_id: 'ptac_outlet_absolutehumidity'
+      unit_of_measurement: "g/m^3"
+      value_template: >
+        {% set c_to_k = 273.15 %}
+        {% set e = 2.71828 %}
+        {% set temperature_C = (states('sensor.minisplit_ptac_indoor_outlet')|float(0) - 32) * 5/9 %}
+        {% set RH = states('sensor.ptac_outlet_relativehumidity_estimated')|float(0) %}
+
+        {% set abs_temperature = temperature_C + c_to_k %}
+        {{ (6.112 * e**((17.67 * temperature_C)/(243.5 + temperature_C)) * RH * 2.1674 / abs_temperature)|round(3) }}
+
+- platform: template
+  sensors:
+    ptac_inlet_absolutehumidity:
+      friendly_name: "PTAC Inlet Absolute Humidity"
+      unique_id: 'ptac_inlet_absolutehumidity'
+      unit_of_measurement: "g/m^3"
+      value_template: >
+        {% set c_to_k = 273.15 %}
+        {% set e = 2.71828 %}
+        {% set temperature_C = (states('sensor.ptac_ptac_local_ambient')|float(0) - 32) * 5/9 %}
+        {% set RH = states('sensor.ptac_relative_humidity')|float(0) %}
+
+        {% set abs_temperature = temperature_C + c_to_k %}
+        {{ (6.112 * e**((17.67 * temperature_C)/(243.5 + temperature_C)) * RH * 2.1674 / abs_temperature)|round(3) }}
+
+- platform: template
+  sensors:
+    ptac_indoor_latent_capacity:
+      friendly_name: "PTAC Indoor Latent Capacity"
+      unique_id: 'ptac_indoor_latent_capacity'
+      unit_of_measurement: 'BTU/hr'
+      value_template: >
+        {% if states('sensor.minisplit_ptac_indoor_fan_actual_speed')|int > 0 -%}
+            {{ (states('sensor.ptac_indoor_cfm')|float(0) * 1.7 * (states('sensor.ptac_inlet_absolutehumidity')|float(0) - states('sensor.ptac_outlet_absolutehumidity')|float(0)) / 453.6 * 1042)|int }}
+        {%- else -%}
+            0
+        {%- endif %}
+
+- platform: template
+  sensors:
+    ptac_indoor_sensible_capacity:
+      friendly_name: "PTAC Indoor Sensible Capacity"
+      unique_id: 'ptac_indoor_sensible_capacity'
+      unit_of_measurement: 'BTU/hr'
+      value_template: >
+        {% if states('sensor.minisplit_ptac_indoor_fan_actual_speed')|int > 0 -%}
+            {{ (states('sensor.ptac_indoor_total_capacity')|float(0) - states('sensor.ptac_indoor_latent_capacity')|float(0))|int }}
+        {%- else -%}
+            0
+        {%- endif %}
+
+- platform: template
+  sensors:
+    ptac_sensible_heat_ratio:
+      friendly_name: "PTAC Sensible Heat Ratio"
+      unique_id: 'ptac_sensible_heat_ratio'
+      unit_of_measurement: '%'
+      value_template: >
+          {{ ((states('sensor.ptac_indoor_sensible_capacity')|float(0) / states('sensor.ptac_indoor_total_capacity')|float(0))*100)|round(1) }}
+
+- platform: template
+  sensors:
+    ptac_thermostat_simulated_line_voltage:
+      friendly_name: "PTAC Simulated Line Voltage"
+      unique_id: 'ptac_simulated_line_voltage'
+      unit_of_measurement: 'V'
+      value_template: >
+        {% if states('binary_sensor.ptac_relay_24vac_select') ==  'on' -%}
+            {{ (states('sensor.ptac_thermostat_voltage')|float(0) / 24 * 220)|round(1) }}
+        {%- else -%}
+            {{ (states('sensor.ptac_thermostat_voltage')|float(0) / 24 * 265)|round(1) }}
+        {%- endif %}

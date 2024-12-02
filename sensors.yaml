@@ -1,0 +1,23 @@
+- platform: template
+  sensors:
+    waterheater_averagetanktemperature:
+      friendly_name: "Water Heater Average Tank Temperature"
+      unique_id: "waterheater_averagetanktemperature"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      value_template: >
+        {{ (states('sensor.waterheater_mid_tank_temp')|float(0) + states('sensor.waterheater_top_tank_temp')|float(0))/2 }}
+
+    waterheater_chargestate:
+      friendly_name: "Water Heater Charge State"
+      unique_id: "waterheater_chargeState"
+      unit_of_measurement: "%"
+      value_template: >
+        {% set tank_size_gallons = states('sensor.waterheater_tank_size')  %}
+        {% set available_hot_water_gallons = states('sensor.waterheater_available_hot_water') %}
+        {% if available_hot_water_gallons > tank_size_gallons -%}
+          {{ 100 }}
+        {%- else -%}
+          {{ min( ((available_hot_water_gallons / tank_size_gallons) * 100)|round(1), 100) }}
+        {%- endif %}
+      device_class: "battery"

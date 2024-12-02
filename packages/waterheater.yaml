@@ -1,0 +1,683 @@
+# - =========================================
+# - MQTT
+# - =========================================
+mqtt:
+  # - =========================================
+  # - MQTT Numbers
+  # - =========================================
+  number:
+    - name: User Setpoint
+      unique_id: user_setpoint
+      command_topic: "geappliances/WaterHeater/erd/0x4024/write"
+      command_template: "{{ '%04x' % (value*10)|int(0) }}"
+      state_topic: "geappliances/WaterHeater/erd/0x4024/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      min: 95
+      max: 150
+      mode: box
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Vacation Setpoint
+      unique_id: vacation_setpoint
+      command_topic: "geappliances/WaterHeater/erd/0x4025/write"
+      command_template: "{{ '%04x' % (value*10)|int(0) }}"
+      state_topic: "geappliances/WaterHeater/erd/0x4025/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      min: 50
+      max: 140
+      mode: box
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Dad Mode Delay
+      unique_id: dad_delay
+      command_topic: "geappliances/WaterHeater/erd/0x411d/write"
+      command_template: "{{ '%02x' % (value)|int(0) }}"
+      state_topic: "geappliances/WaterHeater/erd/0x411d/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "min"
+      device_class: "duration"
+      min: 0
+      max: 255
+      mode: box
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Current Local Energy Cost
+      unique_id: current_local_energy_cost
+      command_topic: "geappliances/WaterHeater/erd/0x4127/write"
+      command_template: "{{ '%02x000000' % (value)|int(0) }}"
+      state_topic: "geappliances/WaterHeater/erd/0x4127/value"
+      value_template: "{{ (value[:2]|int(base=16)) }}"
+      min: 0
+      max: 255
+      mode: box
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Switches
+  # - =========================================
+  switch:
+    - name: Boost Mode
+      unique_id: boostmode
+      command_topic: "geappliances/WaterHeater/erd/0x4221/write"
+      state_topic: "geappliances/WaterHeater/erd/0x4220/value"
+      payload_off: "00"
+      payload_on: "01"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: ToU Override
+      unique_id: override
+      command_topic: "geappliances/WaterHeater/erd/0xd001/write"
+      state_topic: "geappliances/WaterHeater/erd/0xd001/value"
+      payload_off: "00"
+      payload_on: "01"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Select
+  # - =========================================
+  select:
+    - name: Operating Mode
+      unique_id: operatingmode
+      command_topic: "geappliances/WaterHeater/erd/0x4020/write"
+      command_template: >
+        {% set map = {
+        'Hybrid': '00',
+        'Standard Electric': '01',
+        'Heat Pump': '02',
+        'High Demand': '03',
+        'Vacation': '04'
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/WaterHeater/erd/0x4020/value"
+      value_template: >
+        {% set map = {
+        '00': 'Hybrid',
+        '01': 'Standard Electric',
+        '02': 'Heat Pump',
+        '03': 'High Demand',
+        '04': 'Vacation'
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "Hybrid"
+        - "Standard Electric"
+        - "Heat Pump"
+        - "High Demand"
+        - "Vacation"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Mixing Valve Setting
+      unique_id: mixing_valve
+      command_topic: "geappliances/WaterHeater/erd/0x402a/write"
+      command_template: >
+        {% set map = {
+        'Normal': '00',
+        'High': '01',
+        'X-High': '02'
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/WaterHeater/erd/0x402a/value"
+      value_template: >
+        {% set map = {
+        '00': 'Normal',
+        '01': 'High',
+        '02': 'X-High'
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "Normal"
+        - "High"
+        - "X-High"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    # - name: Temperature Units
+    #   unique_id: temp_units
+    #   command_topic: "geappliances/WaterHeater/erd/0x0007/write"
+    #   command_template: >
+    #     {% set map = {
+    #     'Fahrenheit': '00',
+    #     'Celsius': '01'
+    #     } %}
+    #     {{ map[value] if value in map }}
+    #   state_topic: "geappliances/WaterHeater/erd/0x0007/value"
+    #   value_template: >
+    #     {% set map = {
+    #     '00': 'Fahrenheit',
+    #     '01': 'Celsius'
+    #     } %}
+    #     {{ map[value] if value in map }}
+    #   options:
+    #     - "Fahrenheit"
+    #     - "Celsius"
+    #   device:
+    #     name: "WaterHeater"
+    #     identifiers: "Heat Pump Water Heater"
+    #     manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Light/Slider
+  # - =========================================
+  #   light:
+  #     - name: Cost Comfort Slider
+  #       unique_id: costslider
+  #       brightness_command_topic: "geappliances/WaterHeater/erd/0xd00f/write"
+  #       brightness_command_template: "{{ '%02x' % (value*10)|int(0) }}"
+  #       brightness_state_topic: "geappliances/WaterHeater/erd/0xd00f/value"
+  #       brightness_value_template: "{{ (value|int(base=16)) }}"
+  #       brightness_scale: 255
+  #       device:
+  #         name: "WaterHeater"
+  #         identifiers: "Heat Pump Water Heater"
+  #         manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Sensors
+  # - =========================================
+  sensor:
+    - name: Model Number
+      unique_id: modelnumber
+      state_topic: "geappliances/WaterHeater/erd/0x0001/value"
+      value_template: >
+        {%- set line = value %}
+        {%- set chars = " !'#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~" %}
+        {%- set n = 2 %}
+        {%- set ns = namespace(value='') %}
+        {%- for i in range(0, line | length, n) %}
+        {%- set c = chars[line[i:i+n] | int('', 16) - 32 ] %}
+        {%- if c is defined %}
+        {%- set ns.value = ns.value ~ c %}
+        {%- endif %}
+        {%- endfor %}
+        {{ ns.value[0:12] }}
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Clock Hours
+      unique_id: clockHours
+      state_topic: "geappliances/WaterHeater/erd/0x0005/value"
+      value_template: >
+        {% set hours = value[:2]|int(base=16) %}
+        {{ hours }}
+      unit_of_measurement: "hours"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Clock Minutes
+      unique_id: clockMinutes
+      state_topic: "geappliances/WaterHeater/erd/0x0005/value"
+      value_template: >
+        {% set minutes = value[2:4]|int(base=16) %}
+        {{ minutes }}
+      unit_of_measurement: "minutes"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Clock Seconds
+      unique_id: clockSeconds
+      state_topic: "geappliances/WaterHeater/erd/0x0005/value"
+      value_template: >
+        {% set seconds = value[4:6]|int(base=16) %}
+        {{ seconds }}
+      unit_of_measurement: "seconds"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Estimated COP
+      unique_id: estimatedCOP
+      state_topic: "geappliances/WaterHeater/erd/0x4000/value"
+      value_template: "{{ (value|int(base=16))/100 }}"
+      unit_of_measurement: "unitless"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Estimated Heating Power
+      unique_id: estimatedHeatingPower
+      state_topic: "geappliances/WaterHeater/erd/0x4001/value"
+      value_template: "{{ value|int(base=16) }}"
+      unit_of_measurement: "W"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Mixing Valve Absolute Position
+      unique_id: mixingvalve
+      state_topic: "geappliances/WaterHeater/erd/0x400b/value"
+      value_template: "{{ value|int(base=16) }}"
+      unit_of_measurement: "steps"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Setpoint Actual
+      unique_id: setpointactual
+      state_topic: "geappliances/WaterHeater/erd/0x4026/value"
+      value_template: "{{ value|int(base=16)/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Tank Size
+      unique_id: tanksize
+      state_topic: "geappliances/WaterHeater/erd/0x4041/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "Gallons"
+      device_class: "volume"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Mid Tank Temp
+      unique_id: mid_temp
+      state_topic: "geappliances/WaterHeater/erd/0x405f/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Top Tank Temp
+      unique_id: top_temp
+      state_topic: "geappliances/WaterHeater/erd/0x4060/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Tank Target Temp
+      unique_id: tank_target_temp
+      state_topic: "geappliances/WaterHeater/erd/0x402f/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Evap In Temp
+      unique_id: T3a_temp
+      state_topic: "geappliances/WaterHeater/erd/0x4061/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Evap Out Temp
+      unique_id: T3b_temp
+      state_topic: "geappliances/WaterHeater/erd/0x4062/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Compressor Discharge Temp
+      unique_id: T4_temp
+      state_topic: "geappliances/WaterHeater/erd/0x4063/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Ambient Temp
+      unique_id: T5_temp
+      state_topic: "geappliances/WaterHeater/erd/0x4064/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Line Current
+      unique_id: linecurrent
+      state_topic: "geappliances/WaterHeater/erd/0x4065/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "A"
+      device_class: "current"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Line Voltage
+      unique_id: linevoltage
+      state_topic: "geappliances/WaterHeater/erd/0x4066/value"
+      value_template: "{{ value|int(base=16) }}"
+      unit_of_measurement: "V"
+      device_class: "voltage"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: EEV Position
+      unique_id: eevposition
+      state_topic: "geappliances/WaterHeater/erd/0x4067/value"
+      value_template: "{{ value|int(base=16) }}"
+      unit_of_measurement: ""
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Anode Current
+      unique_id: anodecurrent
+      state_topic: "geappliances/WaterHeater/erd/0x4068/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "mA"
+      device_class: "current"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Flow State
+      unique_id: flowstate
+      state_topic: "geappliances/WaterHeater/erd/0x4069/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+        '00': 'Water Not Flowing',
+        '01': 'Water Flowing'
+        } %}
+        {{ map[value] if value in map else 'error' }}
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Mixing Valve Temperature
+      unique_id: T6_temp
+      state_topic: "geappliances/WaterHeater/erd/0x406e/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Estimated power
+      unique_id: estimated_power
+      state_topic: "geappliances/WaterHeater/erd/0x4072/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "watts"
+      device_class: "power"
+      state_class: "total"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Estimated Instantaneous energy use
+      unique_id: estimated_instantaneous_energy
+      state_topic: "geappliances/WaterHeater/erd/0x4074/value"
+      value_template: "{{ (value|int(base=16))/1000 }}"
+      unit_of_measurement: "kWh"
+      device_class: "power"
+      state_class: "total"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Ground Water Temperature
+      unique_id: ground_water_temp
+      state_topic: "geappliances/WaterHeater/erd/0x40b8/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Water Inlet Temperature
+      unique_id: T7_temp
+      state_topic: "geappliances/WaterHeater/erd/0x40b9/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Cpu Temperature
+      unique_id: cpu_temp
+      state_topic: "geappliances/WaterHeater/erd/0x40ba/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Board Temperature
+      unique_id: board_temp
+      state_topic: "geappliances/WaterHeater/erd/0x40bb/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Condensate
+      unique_id: condensate
+      state_topic: "geappliances/WaterHeater/erd/0x40bc/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Anode Rod Remaining
+      unique_id: anode_remaining
+      state_topic: "geappliances/WaterHeater/erd/0x40c2/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "%"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Depletion State
+      unique_id: depletionstate
+      state_topic: "geappliances/WaterHeater/erd/0x40cb/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+        '00': 'Undepleted',
+        '01': 'Mild Depletion',
+        '02': 'Severe Depletion',
+        '03': 'Critical Depletion'
+        } %}
+        {{ map[value] if value in map else 'error' }}
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Time Till Charged
+      unique_id: timetillcharged
+      state_topic: "geappliances/WaterHeater/erd/0x40ce/value"
+      value_template: "{{ value|int(base=16) }}"
+      unit_of_measurement: "min"
+      device_class: "duration"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Available Hot Water
+      unique_id: availablehotwater
+      state_topic: "geappliances/WaterHeater/erd/0x40d0/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "Gallons"
+      device_class: "volume"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Dad Mode Countdown
+      unique_id: dad_mode_countdown
+      state_topic: "geappliances/WaterHeater/erd/0x411c/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "tick"
+      device_class: "duration"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Power Cost State
+      unique_id: powercoststate
+      state_topic: "geappliances/WaterHeater/erd/0x4125/value"
+      device_class: "enum"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+      value_template: >
+        {% set map = {
+        '00': 'Unknown',
+        '01': 'Low Cost',
+        '02': 'Average Cost',
+        '03': 'High Cost'
+        } %}
+        {{ map[value] if value in map else 'error' }}
+
+    - name: Energy Current Cost
+      unique_id: energyCurrentCost
+      state_topic: "geappliances/WaterHeater/erd/0xd009/value"
+      value_template: >
+        {% set current_cost = value[:2]|int(base=16) %}
+        {{ current_cost }}
+      unit_of_measurement: "unitless"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Energy Future Cost
+      unique_id: energyFutureCost
+      state_topic: "geappliances/WaterHeater/erd/0xd009/value"
+      value_template: >
+        {% set future_cost = value[2:4]|int(base=16) %}
+        {{ future_cost }}
+      unit_of_measurement: "unitless"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Energy Cost Minutes Until Change
+      unique_id: energyCostMinutesUntilChange
+      state_topic: "geappliances/WaterHeater/erd/0xd009/value"
+      value_template: >
+        {% set minutes_until_change = value[4:8]|int(base=16) %}
+        {{ minutes_until_change }}
+      unit_of_measurement: "min"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Cheap Energy Used
+      unique_id: cheapenergy
+      state_topic: "geappliances/WaterHeater/erd/0xd012/value"
+      value_template: "{{ (value|int(base=16))/1000 }}"
+      unit_of_measurement: "kWh"
+      device_class: "energy"
+      state_class: "total"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Peak Energy Used
+      unique_id: peakenergy
+      state_topic: "geappliances/WaterHeater/erd/0xd013/value"
+      value_template: "{{ (value|int(base=16))/1000 }}"
+      unit_of_measurement: "kWh"
+      device_class: "energy"
+      state_class: "total"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
+    - name: Energy Used
+      unique_id: cumulativeenergy
+      state_topic: "geappliances/WaterHeater/erd/0xd030/value"
+      value_template: "{{ (value|int(base=16))/1000 }}"
+      unit_of_measurement: "kWh"
+      device_class: "energy"
+      state_class: "total"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
