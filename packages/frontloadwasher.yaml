@@ -1,0 +1,266 @@
+mqtt:
+  sensor:
+    - name: Model Number
+      unique_id: modelnumber
+      state_topic: "geappliances/FrontLoadWasher/erd/0x0001/value"
+      value_template: >
+        {%- set line = value %}
+        {%- set chars = " !'#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~" %}
+        {%- set n = 2 %}
+        {%- set ns = namespace(value='') %}
+        {%- for i in range(0, line | length, n) %}
+        {%- set c = chars[line[i:i+n] | int('', 16) - 32 ] %}
+        {%- if c is defined %}
+        {%- set ns.value = ns.value ~ c %}
+        {%- endif %}
+        {%- endfor %}
+        {{ ns.value[0:12] }}
+      device:
+        name: "FrontLoadWasher"
+        identifiers: "Front Load Washing Machine"
+        manufacturer: "GE Appliances"
+    - name: Door State
+      unique_id: doorstate
+      state_topic: "geappliances/FrontLoadWasher/erd/0x2012/value"
+      device_class: "enum"
+      device:
+        name: "FrontLoadWasher"
+        identifiers: "Front Load Washing Machine"
+        manufacturer: "GE Appliances"
+      value_template: >
+        {% set map = {
+        "00": "Open",
+        "01": "Closed"
+        } %}
+        {{ map[value] if value in map else 'error' }}
+    - name: Machine State
+      unique_id: machinestate
+      state_topic: "geappliances/FrontLoadWasher/erd/0x2000/value"
+      device_class: "enum"
+      device:
+        name: "FrontLoadWasher"
+        identifiers: "Front Load Washing Machine"
+        manufacturer: "GE Appliances"
+      value_template: >
+        {% set map = {
+        "00": "Idle",
+        "01": "Standby",
+        "02": "Run",
+        "03": "Pause",
+        "04": "End Of Cycle",
+        "05": "DSM Delay Run",
+        "06": "Delay Run",
+        "07": "Delay Pause",
+        "08": "Drain Timeout",
+        "09": "Commissioning",
+        "0a": "Bulk Flush",
+        "0b": "Bluetooth Pairing",
+        "80": "Clean Speak"
+        } %}
+        {{ map[value] if value in map else 'error' }}
+    - name: Machine Sub Cycle
+      unique_id: machinecycle
+      state_topic: "geappliances/FrontLoadWasher/erd/0x2001/value"
+      device_class: "enum"
+      device:
+        name: "FrontLoadWasher"
+        identifiers: "Front Load Washing Machine"
+        manufacturer: "GE Appliances"
+      value_template: >
+        {% set map = {
+        "00": "Not Applicable",
+        "01": "Fill",
+        "02": "Soak",
+        "03": "Wash",
+        "04": "Rinse",
+        "05": "Spin",
+        "06": "Drain",
+        "07": "Extra Spin",
+        "08": "Extra Rinse",
+        "09": "Tumble",
+        "0a": "Load Size Detection",
+        "0b": "Prewash",
+        "0c": "Soil Sensing",
+        "0d": "Unlocking",
+        "80": "Drying",
+        "81": "Mist Steam",
+        "82": "Cool Down",
+        "83": "Extended Tumble",
+        "84": "Damp",
+        "85": "Airfluff",
+        "86": "Sensing",
+        "87": "Force Cooling",
+        "88": "Wrinkle Free",
+        "89": "Preparing",
+        "8a": "Steaming",
+        "8b": "Sanitizing",
+        "8c": "Night Care",
+        "8d": "Load Sensing",
+        "8e": "Ultra Fresh",
+        "8f": "Pet Hair"
+        } %}
+        {{ map[value] if value in map else 'error' }}
+    - name: End of Cycle
+      unique_id: endcycle
+      state_topic: "geappliances/FrontLoadWasher/erd/0x2002/value"
+      device_class: "enum"
+      device:
+        name: "FrontLoadWasher"
+        identifiers: "Front Load Washing Machine"
+        manufacturer: "GE Appliances"
+      value_template: >
+        {% set map = {
+        "00": "Not End of Cycle",
+        "01": "End of Cycle"
+        } %}
+        {{ map[value] if value in map else 'error' }}
+    - name: Actual Basket Speed
+      unique_id: basketspeed      
+      state_topic: "geappliances/FrontLoadWasher/erd/0x202c/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "RPM"
+      device_class: "speed"
+      device:
+        name: "FrontLoadWasher"
+        identifiers: "Front Load Washing Machine"
+        manufacturer: "GE Appliances"   
+    - name: Remaining Cycle Time
+      unique_id: remainingcycletime      
+      state_topic: "geappliances/FrontLoadWasher/erd/0x2007/value"
+      value_template: "{{ (value|int(base=16))/60 }}"
+      unit_of_measurement: "minutes"
+      device_class: "duration"
+      device:
+        name: "FrontLoadWasher"
+        identifiers: "Front Load Washing Machine"
+        manufacturer: "GE Appliances"          
+    - name: Selected Cycle
+      unique_id: selectedcycle
+      state_topic: "geappliances/FrontLoadWasher/erd/0x200a/value"
+      device_class: "enum"
+      device:
+        name: "FrontLoadWasher"
+        identifiers: "Front Load Washing Machine"
+        manufacturer: "GE Appliances"
+      value_template: >
+        {% set map = {
+        "00": "Not Defined",
+        "01": "Basket Clean",
+        "02": "Drain and Spin",
+        "03": "Quick Rinse",
+        "04": "Bulky Items",
+        "05": "Sanitize",
+        "06": "Towels or Sheets",
+        "07": "Washer Steam Refresh",
+        "08": "Normal or Mixed Load",
+        "09": "Whites",
+        "0a": "Dark Colors",
+        "0b": "Jeans",
+        "0c": "Hand Wash",
+        "0d": "Delicates",
+        "0e": "Speed Wash",
+        "0f": "Heavy Duty",
+        "10": "Allergen",
+        "11": "Power Clean",
+        "12": "Rinse and Spin",
+        "13": "Single Item Wash",
+        "14": "Colors",
+        "15": "Cold Wash",
+        "16": "Water Station",
+        "17": "Tub Clean",
+        "18": "Casuals with Steam",
+        "19": "Stain Wash with Steam",
+        "1a": "Deep Clean",
+        "1b": "Bulky Bedding",
+        "1c": "Normal",
+        "1d": "Quick Wash",
+        "1e": "Sanitize with Oxi",
+        "1f": "Self Clean",
+        "20": "Towels",
+        "21": "Soak",
+        "22": "Wool",
+        "23": "Ultra Fresh Vent",
+        "24": "Sanitize + Allergen",
+        "25": "Spin Only",
+        "26": "Everyday",
+        "27": "Soft Toys",
+        "28": "Sneakers",
+        "29": "Synthetics",
+        "2a": "Silk",
+        "2b": "Denim",
+        "2c": "Drum Clean",
+        "2d": "Sheets",
+        "2e": "Quick 15",
+        "2f": "Quick 30",
+        "30": "Easy Iron",
+        "31": "Sports",
+        "32": "Eco 40-60",
+        "33": "20 C",
+        "34": "Warm Wash",
+        "35": "Hot Wash",
+        "36": "Swim Wear",
+        "37": "Eco",
+        "38": "Express",
+        "39": "Mix",
+        "3a": "Quick Cycle",
+        "38": "Duvet",
+        "80": "Cottons",
+        "81": "Easy Care",
+        "82": "Active Wear",
+        "83": "Timed Dry",
+        "84": "DeWrinkle",
+        "85": "Quick or Airfluff",
+        "86": "Steam Refresh",
+        "87": "Steam Dewrinkle",
+        "88": "Speed Dry",
+        "89": "Mixed",
+        "8a": "Quick Dry",
+        "8b": "Casuals",
+        "8c": "Warm Up",
+        "8d": "Energy Saver",
+        "8e": "Antibacterial",
+        "8f": "Rack Dry",
+        "90": "Baby Care",
+        "91": "Auto Dry",
+        "92": "Auto Extra Dry",
+        "93": "Perm Press",
+        "94": "Washer Link",
+        "95": "Auto Damp Dry",
+        "96": "Smart Vent",
+        "97": "Pre Iron",
+        "98": "Hygiene",
+        "99": "Cool Air",
+        "9a": "Outdoor",
+        "9b": "Ultra Delicate",
+        "9c": "Scent",
+        "9d": "Sanitize Steam",
+        "9e": "Durable",
+        "9f": "Shoes",
+        "a0": "Shirts",
+        "a1": "Refresh",
+        "a2": "Freshen",
+        "a3": "Eco Cool",
+        "a4": "Rinse & Dry",
+        "a5": "Leather",
+        "a6": "Outerwear",
+        "a7": "Mixed Refresh",
+        "a8": "Shirts Refresh",
+        "a9": "Delicate Refresh",
+        "aa": "Sanitise Refresh",
+        "ab": "Light",
+        "ac": "Heavy",
+        "ad": "Wool or Knit",
+        "ae": "Rain or Snow",
+        "af": "Kids Item",
+        "b0": "Suits or Coats",
+        "b1": "Pants Crease",
+        "b2": "Steam Normal",
+        "b3": "Steam Whites",
+        "b4": "Steam Towels",
+        "b5": "Steam Sanitize",
+        "b6": "Down",
+        "b7": "Night Dry",
+        "b8": "Quiet",
+        "ff": "Reset"
+        } %}
+        {{ map[value] if value in map else 'error' }}

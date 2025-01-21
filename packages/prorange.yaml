@@ -1,0 +1,528 @@
+# - =========================================
+# - MQTT
+# - =========================================
+mqtt:
+  # - =========================================
+  # - MQTT Numbers
+  # - =========================================
+  switch:
+    - name: Right Oven Light
+      unique_id: rightovenlight
+      command_topic: "geappliances/ProRange/erd/0x5111/write"
+      state_topic: "geappliances/ProRange/erd/0x5111/value"
+      payload_off: "00"
+      payload_on: "01"
+      device:
+        name: "ProRange48"
+        identifiers: "Monogram Pro Range"
+        manufacturer: "GE Appliances"
+    - name: Left Oven Light
+      unique_id: lefttovenlight
+      command_topic: "geappliances/ProRange/erd/0x5211/write"
+      state_topic: "geappliances/ProRange/erd/0x5211/value"
+      payload_off: "00"
+      payload_on: "01"
+      device:
+        name: "ProRange48"
+        identifiers: "Monogram Pro Range"
+        manufacturer: "GE Appliances"
+  select:
+    - name: Right Oven Cook Mode
+      unique_id: rightcookmode
+      command_topic: "geappliances/ProRange/erd/0x5100/write"
+      command_template: >
+        {% set map = {
+        'No Mode': '00000000000000000000000000',
+        'Bake': '01015e00000000000000000000',
+        'Convection Bake': '1b015e00000000000000000000',
+        'Convection Roast': '24015e00000000000000000000',
+        'Air Fry': '9e015e00000000000000000000',
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/ProRange/erd/0x5100/value"
+      value_template: >
+        {% set map = {
+        '00': 'No Mode',
+        '01': 'Bake',
+        '02': 'Convection Bake',
+        '04': 'convection Roast',
+        '05': 'Air Fry',
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "No Mode"
+        - "Bake"
+        - "Convection Bake"
+        - "Convection Roast"
+        - "Air Fry"
+      device:
+        name: "ProRange48"
+        identifiers: "Monogram Pro Range"
+        manufacturer: "GE Appliances"
+    - name: Left Oven Cook Mode
+      unique_id: leftcookmode
+      command_topic: "geappliances/ProRange/erd/0x5200/write"
+      command_template: >
+        {% set map = {
+        'No Mode': '00000000000000000000000000',
+        'Bake': '01015e00000000000000000000',
+        'Convection Bake': '1b015e00000000000000000000',
+        'Convection Roast': '24015e00000000000000000000',
+        'Air Fry': '9e015e00000000000000000000',
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/ProRange/erd/0x5200/value"
+      value_template: >
+        {% set map = {
+        '00': 'No Mode',
+        '01': 'Bake',
+        '02': 'Convection Bake',
+        '04': 'Convection Roast',
+        '05': 'Air Fry',
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "No Mode"
+        - "Bake"
+        - "Convection Bake"
+        - "Convection Roast"
+        - "Air Fry"
+      device:
+        name: "ProRange48"
+        identifiers: "Monogram Pro Range"
+        manufacturer: "GE Appliances"
+ 
+  sensor:
+    - name: Right Oven Temp
+      unique_id: right_temp
+      state_topic: "geappliances/ProRange/erd/0x510d/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "ProRange48"
+        identifiers: "Monogram Pro Range"
+        manufacturer: "GE Appliances" 
+    - name: Left Oven Temp
+      unique_id: leftt_temp
+      state_topic: "geappliances/ProRange/erd/0x520d/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "ProRange48"
+        identifiers: "Monogram Pro Range"
+        manufacturer: "GE Appliances" 
+    - name: Model Number
+      unique_id: modelnumber
+      state_topic: "geappliances/ProRange/erd/0x0001/value"
+      value_template: >
+        {%- set line = value %}
+        {%- set chars = " !'#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~" %}
+        {%- set n = 2 %}
+        {%- set ns = namespace(value='') %}
+        {%- for i in range(0, line | length, n) %}
+        {%- set c = chars[line[i:i+n] | int('', 16) - 32 ] %}
+        {%- if c is defined %}
+        {%- set ns.value = ns.value ~ c %}
+        {%- endif %}
+        {%- endfor %}
+        {{ ns.value[0:12] }}
+      device:
+        name: "ProRange48"
+        identifiers: "Monogram Pro Range"
+        manufacturer: "GE Appliances"
+    - name: Right Oven Current Cook Mode
+      unique_id: rightcurrentcookmode
+      state_topic: "geappliances/ProRange/erd/0x5100/value"
+      value_template: >
+        {% set first_two = value[:2] %}
+        {% set mapped_value = {
+         '00': 'No Mode',
+         '01': 'Bake No Option',
+         '02': 'Bake Probe',
+         '03': 'Bake Delay Start',
+         '04': 'Bake Timed Warm',
+         '05': 'Bake Timed Two-Temp',
+         '06': 'Bake Probe Delay Start',
+         '07': 'Bake Timed Shutoff Delay Start',
+         '08': 'Bake Timed Warm Delay Start',
+         '09': 'Bake Timed TwoTemp Delay Start',
+         '0a': 'Bake Sabbath',
+         '0b': 'Broil Low',
+         '0c': 'Broil High',
+         '0d': 'Proof No Option',
+         '0e': 'Proof Delay Start',
+         '0f': 'Warm No Option',
+         '10': 'Warm Probe',
+         '11': 'Warm Delay Start',
+         '12': 'Convection Bake No Option',
+         '13': 'Convection Bake Probe',
+         '14': 'Convection Bake Delay Start',
+         '15': 'Convection Bake Timed Warm',
+         '16': 'Convection Bake Timed Two-Temp',
+         '17': 'Convection Bake Probe Delay Start',
+         '18': 'Convection Bake Timed Shutoff Delay Start',
+         '19': 'Convection Bake Timed Warm Delay Start',
+         '1a': 'Convection Bake Timed TwoTemp Delay Start',
+         '1b': 'Convection Multi-Bake No Option',
+         '1c': 'Convection Multi-Bake Probe',
+         '1d': 'Convection Multi-Bake Delay Start',
+         '1e': 'Convection Multi-Bake Timed Warm',
+         '1f': 'Convection Multi-Bake Timed Two-Temp',
+         '20': 'Convection Multi-Bake Probe Delay Start',
+         '21': 'Convection Multi-Bake Timed Shutoff Delay Start',
+         '22': 'Convection Multi-Bake Timed Warm Delay Start',
+         '23': 'Convection Multi-Bake Timed Two-Temp Delay Start',
+         '24': 'Convection Roast No Option',
+         '25': 'Convection Roast Probe',
+         '26': 'Convection Roast Delay Start',
+         '27': 'Convection Roast Timed Warm',
+         '28': 'Convection Roast Timed Two-Temp',
+         '29': 'Convection Roast Probe Delay Start',
+         '2a': 'Convection Roast Timed Shutoff Delay Start',
+         '2b': 'Convection Roast Timed Warm Delay Start',
+         '2c': 'Convection Roast Timed Two-Temp Delay Start',
+         '2d': 'Convection Broil Low No Option',
+         '2e': 'Convection Broil High No Option',
+         '2f': 'Convection Broil Crisp No Option',
+         '30': 'Convection Broil Crisp Probe',
+         '31': 'Custom Self Clean',
+         '32': 'Custom Self Clean Delay Start',
+         '33': 'Steam Clean',
+         '34': 'Steam Clean Delay Start',
+         '35': 'Dual Broil Low No Option',
+         '36': 'Dual Broil High No Option',
+         '37': 'FCT_NoOption',
+         '38': 'Frozen Snacks No Option',
+         '39': 'Frozen Snacks Multi NoOption',
+         '3a': 'Frozen Pizza No Option',
+         '3b': 'Frozen PizzaMulti No Option',
+         '3c': 'Baked Goods No Option',
+         '3d': 'Frozen Snacks Delay Start',
+         '3e': 'Frozen Snacks Multi Delay Start',
+         '3f': 'Frozen Pizza Delay Start',
+         '40': 'Frozen Pizza Multi Delay Start',
+         '41': 'Baked Goods Delay Start',
+         '42': 'Special 6 No Option',
+         '43': 'Special 6 Probe',
+         '44': 'Special 6 Delay Start',
+         '45': 'Special 6 Probe Delay Start',
+         '46': 'Special 7 No Option',
+         '47': 'Special 7 Probe',
+         '48': 'Special 7 Delay Start',
+         '49': 'Special 7 Probe Delay Start',
+         '4a': 'Special 8 No Option',
+         '4b': 'Special 8 Probe',
+         '4c': 'Special 8 Delay Start',
+         '4d': 'Special 8 Probe Delay Start',
+         '4e': 'Special 9 No Option',
+         '4f': 'Special 9 Probe',
+         '50': 'Special 9 Delay Start',
+         '51': 'Special 9 Probe Delay Start',
+         '52': 'Special 10 No Option',
+         '53': 'Special 10 Probe',
+         '54': 'Special 10 Delay Start',
+         '55': 'Special 10 Probe Delay Start',
+         '56': 'Special 11 No Option',
+         '57': 'Special 11 Probe',
+         '58': 'Special 11 Delay Start',
+         '59': 'Special 11 Probe Delay Start',
+         '5a': 'Special 12 No Option',
+         '5b': 'Special 12 Probe',
+         '5c': 'Special 12 Delay Start',
+         '5d': 'Special 12 Probe Delay Start',
+         '5e': 'Special 13 No Option',
+         '5f': 'Special 13 Probe',
+         '60': 'Special 13 Delay Start',
+         '61': 'Special 13 Probe Delay Start',
+         '62': 'Special 14 No Option',
+         '63': 'Special 14 Probe',
+         '64': 'Special 14 Delay Start',
+         '65': 'Special 14 Probe Delay Start',
+         '66': 'Special 15 No Option',
+         '67': 'Special 15 Probe',
+         '68': 'Special 15 Delay Start',
+         '69': 'Special 15 Probe Delay Start',
+         '6a': 'Special 16 No Option',
+         '6b': 'Special 16 Probe',
+         '6c': 'Special 16 Delay Start',
+         '6d': 'Special 16 Probe Delay Start',
+         '6e': 'Special 17 No Option',
+         '6f': 'Special 17 Probe',
+         '70': 'Special 17 Delay Start',
+         '71': 'Special 17 Probe Delay Start',
+         '72': 'Special 18 No Option',
+         '73': 'Special 18 Probe',
+         '74': 'Special 18 Delay Start',
+         '75': 'Special 18 Probe Delay Start',
+         '76': 'Special 19 No Option',
+         '77': 'Special 19 Probe',
+         '78': 'Special 19 Delay Start',
+         '79': 'Special 19 Probe Delay Start',
+         '7a': 'Special 20 No Option',
+         '7b': 'Special 20 Probe',
+         '7c': 'Special 20 Delay Start',
+         '7d': 'Special 20 Probe Delay Start',
+         '7e': 'Special 21 No Option',
+         '7f': 'Special 21 Probe',
+         '80': 'Special 21 Delay Start',
+         '81': 'Special 21 Probe Delay Start',
+         '82': 'Special 22 No Option',
+         '83': 'Special 22 Probe',
+         '84': 'Special 22 Delay Start',
+         '85': 'Special 22 Probe Delay Start',
+         '86': 'Special 23 No Option',
+         '87': 'Special 23 Probe',
+         '88': 'Special 23 Delay Start',
+         '89': 'Special 23 Probe Delay Start',
+         '8a': 'Special 24 No Option',
+         '8b': 'Special 24 Probe',
+         '8c': 'Special 24 Delay Start',
+         '8d': 'Special 24 Probe Delay Start',
+         '8e': 'Special 25 No Option',
+         '8f': 'Special 25 Probe',
+         '90': 'Special 25 Delay Start',
+         '91': 'Special 25 Probe Delay Start',
+         '92': 'Special 26 No Option',
+         '93': 'Special 26 Probe',
+         '94': 'Special 26 Delay Start',
+         '95': 'Special 26 Probe Delay Start',
+         '96': 'Special 27 No Option',
+         '97': 'Special 27 Probe',
+         '98': 'Special 27 Delay Start',
+         '99': 'Special 27 Probe Delay Start',
+         '9a': 'Special 28 No Option',
+         '9b': 'Special 28 Probe',
+         '9c': 'Special 28 Delay Start',
+         '9d': 'Special 28 Probe Delay Start',
+         '9e': 'Air Fry No Option',
+         '9f': 'Air Fry Probe',
+         'a0': 'Air Fry Delay Start',
+         'a1': 'Air Fry Probe Delay Start',
+         'a2': 'Special 30 No Option',
+         'a3': 'Special 30 Probe',
+         'a4': 'Special 30 Delay Start',
+         'a5': 'Special 30 Probe Delay Start',
+         'a6': 'Crisp No Option',
+         'a7': 'Crisp Probe',
+         'a8': 'Crisp Delay Start',
+         'a9': 'Crisp Probe Delay Start',
+         'aa': 'Reheat High No Option',
+         'ab': 'Reheat High Delay Start',
+         'ac': 'Reheat Low No Option',
+         'ad': 'Reheat Low Delay Start',
+         'ae': 'Bake Rapid Preheat',
+         'af': 'Convection Bake Rapid Preheat',
+         'b0': 'Convection Multi-Bake Rapid Preheat',
+         'b1': 'Convection Roast Rapid Preheat',
+         'b2': 'Convection Broil High Rapid Preheat',
+         'b3': 'Traditional Bake',
+         'b4': 'Traditional Bake Rapid Preheat',
+         'b5': 'Pastry Plus',
+         'b6': 'Pastry Plus Rapid Preheat',
+         'b7': 'Pizza',
+         'b8': 'Defrost'
+        }.get(first_two, 'default_value') %}
+        {{ mapped_value }}
+      device:
+        name: "ProRange48"
+        identifiers: "Monogram Pro Range"
+        manufacturer: "GE Appliances"
+    - name: Left Oven Current Cook Mode
+      unique_id: leftcurrentcookmode
+      state_topic: "geappliances/ProRange/erd/0x5200/value"
+      value_template: >
+        {% set first_two = value[:2] %}
+        {% set mapped_value = {
+         '00': 'No Mode',
+         '01': 'Bake No Option',
+         '02': 'Bake Probe',
+         '03': 'Bake Delay Start',
+         '04': 'Bake Timed Warm',
+         '05': 'Bake Timed Two-Temp',
+         '06': 'Bake Probe Delay Start',
+         '07': 'Bake Timed Shutoff Delay Start',
+         '08': 'Bake Timed Warm Delay Start',
+         '09': 'Bake Timed TwoTemp Delay Start',
+         '0a': 'Bake Sabbath',
+         '0b': 'Broil Low',
+         '0c': 'Broil High',
+         '0d': 'Proof No Option',
+         '0e': 'Proof Delay Start',
+         '0f': 'Warm No Option',
+         '10': 'Warm Probe',
+         '11': 'Warm Delay Start',
+         '12': 'Convection Bake No Option',
+         '13': 'Convection Bake Probe',
+         '14': 'Convection Bake Delay Start',
+         '15': 'Convection Bake Timed Warm',
+         '16': 'Convection Bake Timed Two-Temp',
+         '17': 'Convection Bake Probe Delay Start',
+         '18': 'Convection Bake Timed Shutoff Delay Start',
+         '19': 'Convection Bake Timed Warm Delay Start',
+         '1a': 'Convection Bake Timed TwoTemp Delay Start',
+         '1b': 'Convection Multi-Bake No Option',
+         '1c': 'Convection Multi-Bake Probe',
+         '1d': 'Convection Multi-Bake Delay Start',
+         '1e': 'Convection Multi-Bake Timed Warm',
+         '1f': 'Convection Multi-Bake Timed Two-Temp',
+         '20': 'Convection Multi-Bake Probe Delay Start',
+         '21': 'Convection Multi-Bake Timed Shutoff Delay Start',
+         '22': 'Convection Multi-Bake Timed Warm Delay Start',
+         '23': 'Convection Multi-Bake Timed Two-Temp Delay Start',
+         '24': 'Convection Roast No Option',
+         '25': 'Convection Roast Probe',
+         '26': 'Convection Roast Delay Start',
+         '27': 'Convection Roast Timed Warm',
+         '28': 'Convection Roast Timed Two-Temp',
+         '29': 'Convection Roast Probe Delay Start',
+         '2a': 'Convection Roast Timed Shutoff Delay Start',
+         '2b': 'Convection Roast Timed Warm Delay Start',
+         '2c': 'Convection Roast Timed Two-Temp Delay Start',
+         '2d': 'Convection Broil Low No Option',
+         '2e': 'Convection Broil High No Option',
+         '2f': 'Convection Broil Crisp No Option',
+         '30': 'Convection Broil Crisp Probe',
+         '31': 'Custom Self Clean',
+         '32': 'Custom Self Clean Delay Start',
+         '33': 'Steam Clean',
+         '34': 'Steam Clean Delay Start',
+         '35': 'Dual Broil Low No Option',
+         '36': 'Dual Broil High No Option',
+         '37': 'FCT_NoOption',
+         '38': 'Frozen Snacks No Option',
+         '39': 'Frozen Snacks Multi NoOption',
+         '3a': 'Frozen Pizza No Option',
+         '3b': 'Frozen PizzaMulti No Option',
+         '3c': 'Baked Goods No Option',
+         '3d': 'Frozen Snacks Delay Start',
+         '3e': 'Frozen Snacks Multi Delay Start',
+         '3f': 'Frozen Pizza Delay Start',
+         '40': 'Frozen Pizza Multi Delay Start',
+         '41': 'Baked Goods Delay Start',
+         '42': 'Special 6 No Option',
+         '43': 'Special 6 Probe',
+         '44': 'Special 6 Delay Start',
+         '45': 'Special 6 Probe Delay Start',
+         '46': 'Special 7 No Option',
+         '47': 'Special 7 Probe',
+         '48': 'Special 7 Delay Start',
+         '49': 'Special 7 Probe Delay Start',
+         '4a': 'Special 8 No Option',
+         '4b': 'Special 8 Probe',
+         '4c': 'Special 8 Delay Start',
+         '4d': 'Special 8 Probe Delay Start',
+         '4e': 'Special 9 No Option',
+         '4f': 'Special 9 Probe',
+         '50': 'Special 9 Delay Start',
+         '51': 'Special 9 Probe Delay Start',
+         '52': 'Special 10 No Option',
+         '53': 'Special 10 Probe',
+         '54': 'Special 10 Delay Start',
+         '55': 'Special 10 Probe Delay Start',
+         '56': 'Special 11 No Option',
+         '57': 'Special 11 Probe',
+         '58': 'Special 11 Delay Start',
+         '59': 'Special 11 Probe Delay Start',
+         '5a': 'Special 12 No Option',
+         '5b': 'Special 12 Probe',
+         '5c': 'Special 12 Delay Start',
+         '5d': 'Special 12 Probe Delay Start',
+         '5e': 'Special 13 No Option',
+         '5f': 'Special 13 Probe',
+         '60': 'Special 13 Delay Start',
+         '61': 'Special 13 Probe Delay Start',
+         '62': 'Special 14 No Option',
+         '63': 'Special 14 Probe',
+         '64': 'Special 14 Delay Start',
+         '65': 'Special 14 Probe Delay Start',
+         '66': 'Special 15 No Option',
+         '67': 'Special 15 Probe',
+         '68': 'Special 15 Delay Start',
+         '69': 'Special 15 Probe Delay Start',
+         '6a': 'Special 16 No Option',
+         '6b': 'Special 16 Probe',
+         '6c': 'Special 16 Delay Start',
+         '6d': 'Special 16 Probe Delay Start',
+         '6e': 'Special 17 No Option',
+         '6f': 'Special 17 Probe',
+         '70': 'Special 17 Delay Start',
+         '71': 'Special 17 Probe Delay Start',
+         '72': 'Special 18 No Option',
+         '73': 'Special 18 Probe',
+         '74': 'Special 18 Delay Start',
+         '75': 'Special 18 Probe Delay Start',
+         '76': 'Special 19 No Option',
+         '77': 'Special 19 Probe',
+         '78': 'Special 19 Delay Start',
+         '79': 'Special 19 Probe Delay Start',
+         '7a': 'Special 20 No Option',
+         '7b': 'Special 20 Probe',
+         '7c': 'Special 20 Delay Start',
+         '7d': 'Special 20 Probe Delay Start',
+         '7e': 'Special 21 No Option',
+         '7f': 'Special 21 Probe',
+         '80': 'Special 21 Delay Start',
+         '81': 'Special 21 Probe Delay Start',
+         '82': 'Special 22 No Option',
+         '83': 'Special 22 Probe',
+         '84': 'Special 22 Delay Start',
+         '85': 'Special 22 Probe Delay Start',
+         '86': 'Special 23 No Option',
+         '87': 'Special 23 Probe',
+         '88': 'Special 23 Delay Start',
+         '89': 'Special 23 Probe Delay Start',
+         '8a': 'Special 24 No Option',
+         '8b': 'Special 24 Probe',
+         '8c': 'Special 24 Delay Start',
+         '8d': 'Special 24 Probe Delay Start',
+         '8e': 'Special 25 No Option',
+         '8f': 'Special 25 Probe',
+         '90': 'Special 25 Delay Start',
+         '91': 'Special 25 Probe Delay Start',
+         '92': 'Special 26 No Option',
+         '93': 'Special 26 Probe',
+         '94': 'Special 26 Delay Start',
+         '95': 'Special 26 Probe Delay Start',
+         '96': 'Special 27 No Option',
+         '97': 'Special 27 Probe',
+         '98': 'Special 27 Delay Start',
+         '99': 'Special 27 Probe Delay Start',
+         '9a': 'Special 28 No Option',
+         '9b': 'Special 28 Probe',
+         '9c': 'Special 28 Delay Start',
+         '9d': 'Special 28 Probe Delay Start',
+         '9e': 'Air Fry No Option',
+         '9f': 'Air Fry Probe',
+         'a0': 'Air Fry Delay Start',
+         'a1': 'Air Fry Probe Delay Start',
+         'a2': 'Special 30 No Option',
+         'a3': 'Special 30 Probe',
+         'a4': 'Special 30 Delay Start',
+         'a5': 'Special 30 Probe Delay Start',
+         'a6': 'Crisp No Option',
+         'a7': 'Crisp Probe',
+         'a8': 'Crisp Delay Start',
+         'a9': 'Crisp Probe Delay Start',
+         'aa': 'Reheat High No Option',
+         'ab': 'Reheat High Delay Start',
+         'ac': 'Reheat Low No Option',
+         'ad': 'Reheat Low Delay Start',
+         'ae': 'Bake Rapid Preheat',
+         'af': 'Convection Bake Rapid Preheat',
+         'b0': 'Convection Multi-Bake Rapid Preheat',
+         'b1': 'Convection Roast Rapid Preheat',
+         'b2': 'Convection Broil High Rapid Preheat',
+         'b3': 'Traditional Bake',
+         'b4': 'Traditional Bake Rapid Preheat',
+         'b5': 'Pastry Plus',
+         'b6': 'Pastry Plus Rapid Preheat',
+         'b7': 'Pizza',
+         'b8': 'Defrost'
+        }.get(first_two, 'default_value') %}
+        {{ mapped_value }}
+      device:
+        name: "ProRange48"
+        identifiers: "Monogram Pro Range"
+        manufacturer: "GE Appliances"
