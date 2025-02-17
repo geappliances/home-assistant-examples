@@ -1,0 +1,775 @@
+# - =========================================
+# - MQTT optimized for model GRF40HSV1SS
+# - =========================================
+mqtt:
+  # - =========================================
+  # - MQTT Switch
+  # - =========================================
+  switch:
+    - name: Oven Light
+      unique_id: oven_light
+      command_topic: "geappliances/oven/erd/0x5111/write"
+      state_topic: "geappliances/oven/erd/0x5111/value"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Twelve Hour Shutoff
+      unique_id: twelve_hour_shutoff
+      command_topic: "geappliances/oven/erd/0x5000/write"
+      state_topic: "geappliances/oven/erd/0x5000/value"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Remote Enabled
+      unique_id: remote_enabled
+      command_topic: "geappliances/oven/erd/0x510a/write"
+      state_topic: "geappliances/oven/erd/0x510a/value"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Clock Display Request
+      unique_id: clock_display
+      command_topic: "geappliances/oven/erd/0x5019/write"
+      state_topic: "geappliances/oven/erd/0x5019/value"
+      payload_on: "01"
+      payload_off: "00"
+      state_on: "01"
+      state_off: "00"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Control User Interface Locked
+      unique_id: control_user_interface_locked
+      command_topic: "geappliances/oven/erd/0x0004/write"
+      state_topic: "geappliances/oven/erd/0x0004/value"
+      value_template: "{{ value[:2]|string }}"
+      payload_on: "01"
+      payload_off: "02"
+      state_on: "01"
+      state_off: "02"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Number
+  # - =========================================
+  number:
+    - name: Cook Mode Temperature
+      unique_id: cook_mode_temperature
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      command_topic: "geappliances/oven/erd/0x5100/write"
+      command_template: >
+        {% set temp_hex = '%03x' % (value | int) %}
+        {% set base = states('sensor.oven_current_cook_mode_raw') | default('01015e00000000000000000000') %}
+        {% if base | length >= 12 %}
+          {{ base[:3] + temp_hex.zfill(3) + base[7:] }}
+        {% else %}
+          {{ '010' + temp_hex.zfill(3) + '000000000000000000000' }}
+        {% endif %}
+      state_topic: "geappliances/oven/erd/0x5100/value"
+      value_template: >
+        {{ value[3:6] | int(base=16) }}
+      min: 0
+      max: 500
+      step: 1
+      mode: box
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+
+    - name: Minutes Until Sunset
+      unique_id: minutes_until_sunset
+      command_topic: "geappliances/oven/erd/0x003d/write"
+      command_template: >
+        {{ '%08x' % value|int(0) }}
+      state_topic: "geappliances/oven/erd/0x003d/value"
+      value_template: >
+        {{ value|int(base=16) }}
+      unit_of_measurement: "min"
+      device_class: "duration"
+      min: 0
+      max: 1440
+      step: 1
+      mode: box
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Minutes Until Next Sabbath
+      unique_id: minutes_until_next_sabbath
+      command_topic: "geappliances/oven/erd/0x003e/write"
+      command_template: >
+        {{ '%04x' % value|int(0) }}
+      state_topic: "geappliances/oven/erd/0x003e/value"
+      value_template: >
+        {{ value|int(base=16) }}
+      unit_of_measurement: "min"
+      device_class: "duration"
+      min: -1600
+      max: 10000
+      step: 1
+      mode: box
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Minutes Until Next Jewish Holiday
+      unique_id: minutes_until_next_jewish_holiday
+      command_topic: "geappliances/oven/erd/0x003f/write"
+      command_template: >
+        {{ '%08x' % value|int(0) }}
+      state_topic: "geappliances/oven/erd/0x003f/value"
+      value_template: >
+        {{ value|int(base=16) }}
+      unit_of_measurement: "min"
+      device_class: "duration"
+      min: -4500
+      max: 350000
+      step: 1
+      mode: box
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+
+    - name: Clock Hour
+      unique_id: clock_hour
+      command_topic: "geappliances/oven/erd/0x0005/write"
+      command_template: >
+        {% set hour = value | int %}
+        {% set minute = states('number.oven_clock_minute') | int %}
+        {% set second = states('number.oven_clock_second') | int %}
+        {{ '%02X%02X%02X' | format(hour, minute, second) }}
+      state_topic: "geappliances/oven/erd/0x0005/value"
+      value_template: >
+        {% set hour = value[:2]|int(base=16) %}
+        {{ hour }}
+      unit_of_measurement: "h"
+      device_class: "duration"
+      min: 0
+      max: 23
+      step: 1
+      mode: box
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Clock Minute
+      unique_id: clock_minute
+      command_topic: "geappliances/oven/erd/0x0005/write"
+      command_template: >
+        {% set hour = states('number.oven_clock_hour') | int %}
+        {% set minute = value | int %}
+        {% set second = states('number.oven_clock_second') | int %}
+        {{ '%02X%02X%02X' | format(hour, minute, second) }}
+      state_topic: "geappliances/oven/erd/0x0005/value"
+      value_template: >
+        {% set minute = value[2:4]|int(base=16) %}
+        {{ minute }}
+      unit_of_measurement: "min"
+      device_class: "duration"
+      min: 0
+      max: 59
+      step: 1
+      mode: box
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Clock Second
+      unique_id: clock_second
+      command_topic: "geappliances/oven/erd/0x0005/write"
+      command_template: >
+        {% set hour = states('number.oven_clock_hour') | int %}
+        {% set minute = states('number.oven_clock_minute') | int %}
+        {% set second = value | int %}
+        {{ '%02X%02X%02X' | format(hour, minute, second) }}
+      state_topic: "geappliances/oven/erd/0x0005/value"
+      value_template: >
+        {% set minute = value[4:6]|int(base=16) %}
+        {{ minute }}
+      unit_of_measurement: "s"
+      device_class: "duration"
+      min: 0
+      max: 59
+      step: 1
+      mode: box
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Display Timer
+      unique_id: display_timer
+      command_topic: "geappliances/oven/erd/0x5105/write"
+      command_template: >
+        {{ '%04x' % value|int(0) }}
+      state_topic: "geappliances/oven/erd/0x5105/value"
+      value_template: >
+        {{ value|int(base=16) }}
+      unit_of_measurement: "min"
+      device_class: "duration"
+      min: 0
+      max: 1440
+      step: 1
+      mode: box
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: User Temperature Offset
+      unique_id: user_temperature_offset
+      command_topic: "geappliances/oven/erd/0x5106/write"
+      command_template: >
+        {{ '%02x' % (value | int) }}
+      state_topic: "geappliances/oven/erd/0x5106/value"
+      value_template: >
+        {{ value|int }}
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      min: -255
+      max: 255
+      step: 1
+      mode: box
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Select
+  # - =========================================
+  select:
+    - name: Cook Mode
+      unique_id: cook_mode
+      command_topic: "geappliances/oven/erd/0x5100/write"
+      command_template: >
+        {% set map = {
+        'No Mode': '00000000000000000000000000',
+        'Bake 350': '01015e00000000000000000000',
+        'Bake 400': '01019000000000000000000000',
+        'Broil High': '0c000000000000000000000000',
+        'Broil Low': '0b000000000000000000000000',
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/oven/erd/0x5100/value"
+      value_template: >
+        {% set mode_code = value[:2] %}
+        {% set map = {
+          '00': 'No Mode',
+          '01': 'Bake 350',
+          '02': 'Bake 400',
+          '0c': 'Broil High',
+          '0b': 'Broil Low',
+        } %}
+        {{ map[mode_code] if mode_code in map else 'No Mode' }}
+      options:
+        - "No Mode"
+        - "Bake 350"
+        - "Bake 400"
+        - "Broil High"
+        - "Broil Low"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Temperature Display Units
+      unique_id: temp_units
+      command_topic: "geappliances/oven/erd/0x0007/write"
+      command_template: >
+        {% set map = {
+        'Fahrenheit': '00',
+        'Celsius': '01'
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/oven/erd/0x0007/value"
+      value_template: >
+        {% set map = {
+        '00': 'Fahrenheit',
+        '01': 'Celsius'
+        } %}
+        {{ map[value] if value in map else 'Unknown' }}
+      options:
+        - "Fahrenheit"
+        - "Celsius"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: "Clock Format"
+      unique_id: clock_format
+      command_topic: "geappliances/oven/erd/0x0006/write"
+      command_template: >
+        {% set map = {
+          '12 Hour Time': '00',
+          '24 Hour Time': '01',
+          'No Clock Display': '02'
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/oven/erd/0x0006/value"
+      value_template: >
+        {% set map = {
+          '00': '12 Hour Time',
+          '01': '24 Hour Time',
+          '02': 'No Clock Display'
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "12 Hour Time"
+        - "24 Hour Time"
+        - "No Clock Display"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+
+    - name: Sabbath Mode
+      unique_id: sabbath_mode
+      command_topic: "geappliances/oven/erd/0x0009/write"
+      command_template: >
+        {% set map = {
+        'Disable': '00',
+        'Enable': '01'
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/oven/erd/0x0009/value"
+      value_template: >
+        {% set map = {
+        '00': 'Disable',
+        '01': 'Enable'
+        } %}
+        {{ map[value] if value in map else 'Not Applicable' }}
+      options:
+        - "Disable"
+        - "Enable"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Enhanced Sabbath Mode
+      unique_id: enhanced_sabbath_mode
+      command_topic: "geappliances/oven/erd/0x004f/write"
+      command_template: >
+        {% set map = {
+        'Inactive': '00',
+        'Active': '01'
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/oven/erd/0x004f/value"
+      value_template: >
+        {% set map = {
+        '00': 'Inactive',
+        '01': 'Active'
+        } %}
+        {{ map[value] if value in map else 'Unknown' }}
+      options:
+        - "Inactive"
+        - "Active"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+
+    - name: "Sound Level"
+      unique_id: sound_level
+      command_topic: "geappliances/oven/erd/0x000a/write"
+      command_template: >
+        {% set map = {
+          'Off/Mute': '00',
+          'Low': '01',
+          'Medium': '02',
+          'High': '03'
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/oven/erd/0x000a/value"
+      value_template: >
+        {% set map = {
+          '00': 'Off/Mute',
+          '01': 'Low',
+          '02': 'Medium',
+          '03': 'High'
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "Off/Mute"
+        - "Low"
+        - "Medium"
+        - "High"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: "End Tone"
+      unique_id: end_tone
+      command_topic: "geappliances/oven/erd/0x5001/write"
+      command_template: >
+        {% set map = {
+          'Beep': '00',
+          'Continuous Tone': '01'
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/oven/erd/0x5001/value"
+      value_template: >
+        {% set map = {
+          '00': 'Beep',
+          '01': 'Continuous Tone'
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "Beep"
+        - "Continuous Tone"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Sensor
+  # - =========================================
+  sensor:
+    - name: Oven Temp
+      unique_id: temp
+      state_topic: "geappliances/oven/erd/0x510d/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Oven Displayed Temp
+      unique_id: displayed_temp
+      state_topic: "geappliances/oven/erd/0x5109/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Model Number
+      unique_id: modelnumber
+      state_topic: "geappliances/oven/erd/0x0001/value"
+      value_template: >
+        {%- set line = value %}
+        {%- set chars = " !'#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~" %}
+        {%- set n = 2 %}
+        {%- set ns = namespace(value='') %}
+        {%- for i in range(0, line | length, n) %}
+        {%- set c = chars[line[i:i+n] | int('', 16) - 32 ] %}
+        {%- if c is defined %}
+        {%- set ns.value = ns.value ~ c %}
+        {%- endif %}
+        {%- endfor %}
+        {{ ns.value[0:12] }}
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Serial Number
+      unique_id: serialnumber
+      state_topic: "geappliances/oven/erd/0x0002/value"
+      value_template: >
+        {%- set line = value %}
+        {%- set chars = " !'#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~" %}
+        {%- set n = 2 %}
+        {%- set ns = namespace(value='') %}
+        {%- for i in range(0, line | length, n) %}
+        {%- set c = chars[line[i:i+n] | int('', 16) - 32 ] %}
+        {%- if c is defined %}
+        {%- set ns.value = ns.value ~ c %}
+        {%- endif %}
+        {%- endfor %}
+        {{ ns.value[0:12] }}
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Current Cook Mode
+      unique_id: current_cook_mode
+      state_topic: "geappliances/oven/erd/0x5100/value"
+      value_template: >
+        {% set first_two = value[:2] %}
+        {% set mapped_value = {
+         '00': 'No Mode',
+         '01': 'Bake No Option',
+         '02': 'Bake Probe',
+         '03': 'Bake Delay Start',
+         '04': 'Bake Timed Warm',
+         '05': 'Bake Timed Two-Temp',
+         '06': 'Bake Probe Delay Start',
+         '07': 'Bake Timed Shutoff Delay Start',
+         '08': 'Bake Timed Warm Delay Start',
+         '09': 'Bake Timed TwoTemp Delay Start',
+         '0a': 'Bake Sabbath',
+         '0b': 'Broil Low',
+         '0c': 'Broil High',
+         '0d': 'Proof No Option',
+         '0e': 'Proof Delay Start',
+         '0f': 'Warm No Option',
+         '10': 'Warm Probe',
+         '11': 'Warm Delay Start',
+         '12': 'Convection Bake No Option',
+         '13': 'Convection Bake Probe',
+         '14': 'Convection Bake Delay Start',
+         '15': 'Convection Bake Timed Warm',
+         '16': 'Convection Bake Timed Two-Temp',
+         '17': 'Convection Bake Probe Delay Start',
+         '18': 'Convection Bake Timed Shutoff Delay Start',
+         '19': 'Convection Bake Timed Warm Delay Start',
+         '1a': 'Convection Bake Timed TwoTemp Delay Start',
+         '1b': 'Convection Multi-Bake No Option',
+         '1c': 'Convection Multi-Bake Probe',
+         '1d': 'Convection Multi-Bake Delay Start',
+         '1e': 'Convection Multi-Bake Timed Warm',
+         '1f': 'Convection Multi-Bake Timed Two-Temp',
+         '20': 'Convection Multi-Bake Probe Delay Start',
+         '21': 'Convection Multi-Bake Timed Shutoff Delay Start',
+         '22': 'Convection Multi-Bake Timed Warm Delay Start',
+         '23': 'Convection Multi-Bake Timed Two-Temp Delay Start',
+         '24': 'Convection Roast No Option',
+         '25': 'Convection Roast Probe',
+         '26': 'Convection Roast Delay Start',
+         '27': 'Convection Roast Timed Warm',
+         '28': 'Convection Roast Timed Two-Temp',
+         '29': 'Convection Roast Probe Delay Start',
+         '2a': 'Convection Roast Timed Shutoff Delay Start',
+         '2b': 'Convection Roast Timed Warm Delay Start',
+         '2c': 'Convection Roast Timed Two-Temp Delay Start',
+         '2d': 'Convection Broil Low No Option',
+         '2e': 'Convection Broil High No Option',
+         '2f': 'Convection Broil Crisp No Option',
+         '30': 'Convection Broil Crisp Probe',
+         '31': 'Custom Self Clean',
+         '32': 'Custom Self Clean Delay Start',
+         '33': 'Steam Clean',
+         '34': 'Steam Clean Delay Start',
+         '35': 'Dual Broil Low No Option',
+         '36': 'Dual Broil High No Option',
+         '37': 'FCT_NoOption',
+         '38': 'Frozen Snacks No Option',
+         '39': 'Frozen Snacks Multi NoOption',
+         '3a': 'Frozen Pizza No Option',
+         '3b': 'Frozen PizzaMulti No Option',
+         '3c': 'Baked Goods No Option',
+         '3d': 'Frozen Snacks Delay Start',
+         '3e': 'Frozen Snacks Multi Delay Start',
+         '3f': 'Frozen Pizza Delay Start',
+         '40': 'Frozen Pizza Multi Delay Start',
+         '41': 'Baked Goods Delay Start',
+         '42': 'Special 6 No Option',
+         '43': 'Special 6 Probe',
+         '44': 'Special 6 Delay Start',
+         '45': 'Special 6 Probe Delay Start',
+         '46': 'Special 7 No Option',
+         '47': 'Special 7 Probe',
+         '48': 'Special 7 Delay Start',
+         '49': 'Special 7 Probe Delay Start',
+         '4a': 'Special 8 No Option',
+         '4b': 'Special 8 Probe',
+         '4c': 'Special 8 Delay Start',
+         '4d': 'Special 8 Probe Delay Start',
+         '4e': 'Special 9 No Option',
+         '4f': 'Special 9 Probe',
+         '50': 'Special 9 Delay Start',
+         '51': 'Special 9 Probe Delay Start',
+         '52': 'Special 10 No Option',
+         '53': 'Special 10 Probe',
+         '54': 'Special 10 Delay Start',
+         '55': 'Special 10 Probe Delay Start',
+         '56': 'Special 11 No Option',
+         '57': 'Special 11 Probe',
+         '58': 'Special 11 Delay Start',
+         '59': 'Special 11 Probe Delay Start',
+         '5a': 'Special 12 No Option',
+         '5b': 'Special 12 Probe',
+         '5c': 'Special 12 Delay Start',
+         '5d': 'Special 12 Probe Delay Start',
+         '5e': 'Special 13 No Option',
+         '5f': 'Special 13 Probe',
+         '60': 'Special 13 Delay Start',
+         '61': 'Special 13 Probe Delay Start',
+         '62': 'Special 14 No Option',
+         '63': 'Special 14 Probe',
+         '64': 'Special 14 Delay Start',
+         '65': 'Special 14 Probe Delay Start',
+         '66': 'Special 15 No Option',
+         '67': 'Special 15 Probe',
+         '68': 'Special 15 Delay Start',
+         '69': 'Special 15 Probe Delay Start',
+         '6a': 'Special 16 No Option',
+         '6b': 'Special 16 Probe',
+         '6c': 'Special 16 Delay Start',
+         '6d': 'Special 16 Probe Delay Start',
+         '6e': 'Special 17 No Option',
+         '6f': 'Special 17 Probe',
+         '70': 'Special 17 Delay Start',
+         '71': 'Special 17 Probe Delay Start',
+         '72': 'Special 18 No Option',
+         '73': 'Special 18 Probe',
+         '74': 'Special 18 Delay Start',
+         '75': 'Special 18 Probe Delay Start',
+         '76': 'Special 19 No Option',
+         '77': 'Special 19 Probe',
+         '78': 'Special 19 Delay Start',
+         '79': 'Special 19 Probe Delay Start',
+         '7a': 'Special 20 No Option',
+         '7b': 'Special 20 Probe',
+         '7c': 'Special 20 Delay Start',
+         '7d': 'Special 20 Probe Delay Start',
+         '7e': 'Special 21 No Option',
+         '7f': 'Special 21 Probe',
+         '80': 'Special 21 Delay Start',
+         '81': 'Special 21 Probe Delay Start',
+         '82': 'Special 22 No Option',
+         '83': 'Special 22 Probe',
+         '84': 'Special 22 Delay Start',
+         '85': 'Special 22 Probe Delay Start',
+         '86': 'Special 23 No Option',
+         '87': 'Special 23 Probe',
+         '88': 'Special 23 Delay Start',
+         '89': 'Special 23 Probe Delay Start',
+         '8a': 'Special 24 No Option',
+         '8b': 'Special 24 Probe',
+         '8c': 'Special 24 Delay Start',
+         '8d': 'Special 24 Probe Delay Start',
+         '8e': 'Special 25 No Option',
+         '8f': 'Special 25 Probe',
+         '90': 'Special 25 Delay Start',
+         '91': 'Special 25 Probe Delay Start',
+         '92': 'Special 26 No Option',
+         '93': 'Special 26 Probe',
+         '94': 'Special 26 Delay Start',
+         '95': 'Special 26 Probe Delay Start',
+         '96': 'Special 27 No Option',
+         '97': 'Special 27 Probe',
+         '98': 'Special 27 Delay Start',
+         '99': 'Special 27 Probe Delay Start',
+         '9a': 'Special 28 No Option',
+         '9b': 'Special 28 Probe',
+         '9c': 'Special 28 Delay Start',
+         '9d': 'Special 28 Probe Delay Start',
+         '9e': 'Air Fry No Option',
+         '9f': 'Air Fry Probe',
+         'a0': 'Air Fry Delay Start',
+         'a1': 'Air Fry Probe Delay Start',
+         'a2': 'Special 30 No Option',
+         'a3': 'Special 30 Probe',
+         'a4': 'Special 30 Delay Start',
+         'a5': 'Special 30 Probe Delay Start',
+         'a6': 'Crisp No Option',
+         'a7': 'Crisp Probe',
+         'a8': 'Crisp Delay Start',
+         'a9': 'Crisp Probe Delay Start',
+         'aa': 'Reheat High No Option',
+         'ab': 'Reheat High Delay Start',
+         'ac': 'Reheat Low No Option',
+         'ad': 'Reheat Low Delay Start',
+         'ae': 'Bake Rapid Preheat',
+         'af': 'Convection Bake Rapid Preheat',
+         'b0': 'Convection Multi-Bake Rapid Preheat',
+         'b1': 'Convection Roast Rapid Preheat',
+         'b2': 'Convection Broil High Rapid Preheat',
+         'b3': 'Traditional Bake',
+         'b4': 'Traditional Bake Rapid Preheat',
+         'b5': 'Pastry Plus',
+         'b6': 'Pastry Plus Rapid Preheat',
+         'b7': 'Pizza',
+         'b8': 'Defrost'
+        }.get(first_two, 'default_value') %}
+        {{ mapped_value }}
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Current Cook Mode Raw
+      unique_id: current_cook_mode_raw
+      state_topic: "geappliances/oven/erd/0x5100/value"
+      value_template: >
+        {{value}}
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Oven Door State
+      unique_id: doorstate
+      state_topic: "geappliances/oven/erd/0x5110/value"
+      value_template: >
+        {% set first_two = value[:2] %}
+        {% set mapped_value = {
+         '00': 'Unknown',
+         '01': 'Open',
+         '02': 'Closed',
+         '03': 'Initial Inspection'
+        }.get(first_two, 'default_value') %}
+        {{ mapped_value }}
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+
+    - name: "Cooktop Status"
+      unique_id: cooktop_status
+      state_topic: "geappliances/oven/erd/0x5520/value"
+      value_template: >
+        {% set map = {
+        '00': 'Off',
+        '01': 'On',
+        '02': 'Igniting',
+        '03': 'Unknown',
+        'FF': 'Not Supported'
+        } %}
+        {{ map[value[:2]] if value[:2] in map else 'Unknown' }}
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Delay Time Remaining
+      unique_id: delay_time_remaining
+      state_topic: "geappliances/oven/erd/0x5102/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "min"
+      device_class: "duration"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Cook Time Remaining
+      unique_id: cook_time_remaining
+      state_topic: "geappliances/oven/erd/0x5104/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "min"
+      device_class: "temperature"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
+    - name: Elapsed Cook Time
+      unique_id: elapsed_cook_time
+      state_topic: "geappliances/oven/erd/0x5108/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      unit_of_measurement: "min"
+      device_class: "duration"
+      device:
+        name: "oven"
+        identifiers: "Oven Range"
+        manufacturer: "GE Appliances"
