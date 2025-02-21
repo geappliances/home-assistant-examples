@@ -6,8 +6,8 @@ mqtt:
   # - MQTT Switch
   # - =========================================
   switch:
-    - name: Oven Light
-      unique_id: oven_light
+    - name: Light
+      unique_id: light
       command_topic: "geappliances/oven/erd/0x5111/write"
       state_topic: "geappliances/oven/erd/0x5111/value"
       payload_on: "01"
@@ -54,19 +54,19 @@ mqtt:
         name: "oven"
         identifiers: "Oven Range"
         manufacturer: "GE Appliances"
-    - name: Control User Interface Locked
-      unique_id: control_user_interface_locked
-      command_topic: "geappliances/oven/erd/0x0004/write"
-      state_topic: "geappliances/oven/erd/0x0004/value"
-      value_template: "{{ value[:2]|string }}"
-      payload_on: "01"
-      payload_off: "02"
-      state_on: "01"
-      state_off: "02"
-      device:
-        name: "oven"
-        identifiers: "Oven Range"
-        manufacturer: "GE Appliances"
+    # - name: Control User Interface Locked
+    #   unique_id: control_user_interface_locked
+    #   command_topic: "geappliances/oven/erd/0x0004/write"
+    #   state_topic: "geappliances/oven/erd/0x0004/value"
+    #   value_template: "{{ value[:2]|string }}"
+    #   payload_on: "01"
+    #   payload_off: "02"
+    #   state_on: "01"
+    #   state_off: "02"
+    #   device:
+    #     name: "oven"
+    #     identifiers: "Oven Range"
+    #     manufacturer: "GE Appliances"
 
   # - =========================================
   # - MQTT Number
@@ -446,8 +446,8 @@ mqtt:
   # - MQTT Sensor
   # - =========================================
   sensor:
-    - name: Oven Temp
-      unique_id: temp
+    - name: Temperature
+      unique_id: temperature
       state_topic: "geappliances/oven/erd/0x510d/value"
       value_template: "{{ (value|int(base=16)) }}"
       unit_of_measurement: "°F"
@@ -456,7 +456,7 @@ mqtt:
         name: "oven"
         identifiers: "Oven Range"
         manufacturer: "GE Appliances"
-    - name: Oven Displayed Temp
+    - name: Displayed Temp
       unique_id: displayed_temp
       state_topic: "geappliances/oven/erd/0x5109/value"
       value_template: "{{ (value|int(base=16)) }}"
@@ -467,7 +467,7 @@ mqtt:
         identifiers: "Oven Range"
         manufacturer: "GE Appliances"
     - name: Model Number
-      unique_id: modelnumber
+      unique_id: model_number
       state_topic: "geappliances/oven/erd/0x0001/value"
       value_template: >
         {%- set line = value %}
@@ -486,7 +486,7 @@ mqtt:
         identifiers: "Oven Range"
         manufacturer: "GE Appliances"
     - name: Serial Number
-      unique_id: serialnumber
+      unique_id: serial_number
       state_topic: "geappliances/oven/erd/0x0002/value"
       value_template: >
         {%- set line = value %}
@@ -710,8 +710,8 @@ mqtt:
         name: "oven"
         identifiers: "Oven Range"
         manufacturer: "GE Appliances"
-    - name: Oven Door State
-      unique_id: doorstate
+    - name: Door State
+      unique_id: door_state
       state_topic: "geappliances/oven/erd/0x5110/value"
       value_template: >
         {% set first_two = value[:2] %}
@@ -766,7 +766,7 @@ mqtt:
     - name: Elapsed Cook Time
       unique_id: elapsed_cook_time
       state_topic: "geappliances/oven/erd/0x5108/value"
-      value_template: "{{ (value|int(base=16)) }}"
+      value_template: "{{ 0 if value == 'ffff' else (value|int(base=16)) }}"
       unit_of_measurement: "min"
       device_class: "duration"
       device:
