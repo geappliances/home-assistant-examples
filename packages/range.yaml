@@ -122,7 +122,12 @@ mqtt:
         {{ '%04x' % value|int(0) }}
       state_topic: "geappliances/oven/erd/0x003e/value"
       value_template: >
-        {{ value|int(base=16) }}
+        {% set output = (value|int(base=16)) %} 
+        {%- if output > 32767 -%} 
+            {{ (output - 65535) }} 
+        {%- else -%} 
+            {{ output }} 
+        {%- endif -%}
       unit_of_measurement: "min"
       device_class: "duration"
       min: -1600
@@ -140,7 +145,12 @@ mqtt:
         {{ '%08x' % value|int(0) }}
       state_topic: "geappliances/oven/erd/0x003f/value"
       value_template: >
-        {{ value|int(base=16) }}
+        {% set output = (value|int(base=16)) %} 
+        {%- if output > 32767 -%} 
+            {{ (output - 65535) }} 
+        {%- else -%} 
+            {{ output }} 
+        {%- endif -%}
       unit_of_measurement: "min"
       device_class: "duration"
       min: -4500
@@ -240,14 +250,19 @@ mqtt:
       unique_id: user_temperature_offset
       command_topic: "geappliances/oven/erd/0x5106/write"
       command_template: >
-        {{ '%02x' % (value | int) }}
+        {{ '%02x' % value|int(0) }}
       state_topic: "geappliances/oven/erd/0x5106/value"
       value_template: >
-        {{ value|int }}
+        {% set output = (value|int(base=16)) %} 
+        {%- if output > 32767 -%} 
+            {{ (output - 65535) }} 
+        {%- else -%} 
+            {{ output }} 
+        {%- endif -%}
       unit_of_measurement: "°F"
       device_class: "temperature"
-      min: -255
-      max: 255
+      min: -128
+      max: 127
       step: 1
       mode: box
       device:
