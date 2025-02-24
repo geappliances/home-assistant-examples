@@ -122,12 +122,12 @@ mqtt:
         {{ '%04x' % value|int(0) }}
       state_topic: "geappliances/oven/erd/0x003e/value"
       value_template: >
-        {% set hex_value = value|string %}
-        {% if hex_value[0] == 'd' %}
-          {{ -(hex_value[1:]|int(base=16)) }}
-        {% else %}
-          {{ hex_value|int(base=16) }}
-        {% endif %}
+        {% set output = (value|int(base=16)) %} 
+        {%- if output > 32767 -%} 
+            {{ (output - 65535) }} 
+        {%- else -%} 
+            {{ output }} 
+        {%- endif -%}
       unit_of_measurement: "min"
       device_class: "duration"
       min: -1600
@@ -145,12 +145,12 @@ mqtt:
         {{ '%08x' % value|int(0) }}
       state_topic: "geappliances/oven/erd/0x003f/value"
       value_template: >
-        {% set hex_value = value|string %}
-        {% if hex_value[0] == 'd' %}
-          {{ -(hex_value[1:]|int(base=16)) }}
-        {% else %}
-          {{ hex_value|int(base=16) }}
-        {% endif %}
+        {% set output = (value|int(base=16)) %} 
+        {%- if output > 32767 -%} 
+            {{ (output - 65535) }} 
+        {%- else -%} 
+            {{ output }} 
+        {%- endif -%}
       unit_of_measurement: "min"
       device_class: "duration"
       min: -4500
@@ -253,12 +253,12 @@ mqtt:
         {{ '%02x' % value|int(0) }}
       state_topic: "geappliances/oven/erd/0x5106/value"
       value_template: >
-        {% set hex_value = value|string %}
-        {% if hex_value[0] == 'd' %}
-          {{ -(hex_value[1:]|int(base=16)) }}
-        {% else %}
-          {{ hex_value|int(base=16) }}
-        {% endif %}
+        {% set output = (value|int(base=16)) %} 
+        {%- if output > 32767 -%} 
+            {{ (output - 65535) }} 
+        {%- else -%} 
+            {{ output }} 
+        {%- endif -%}
       unit_of_measurement: "°F"
       device_class: "temperature"
       min: -128
