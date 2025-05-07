@@ -304,7 +304,6 @@ mqtt:
       state_topic: "geappliances/WaterHeater/erd/0x4041/value"
       value_template: "{{ (value|int(base=16)) }}"
       unit_of_measurement: "Gallons"
-      device_class: "volume"
       device:
         name: "WaterHeater"
         identifiers: "Heat Pump Water Heater"
@@ -460,7 +459,7 @@ mqtt:
       unique_id: estimated_power
       state_topic: "geappliances/WaterHeater/erd/0x4072/value"
       value_template: "{{ (value|int(base=16)) }}"
-      unit_of_measurement: "watts"
+      unit_of_measurement: "W"
       device_class: "power"
       state_class: "total"
       device:
@@ -473,7 +472,7 @@ mqtt:
       state_topic: "geappliances/WaterHeater/erd/0x4074/value"
       value_template: "{{ (value|int(base=16))/1000 }}"
       unit_of_measurement: "kWh"
-      device_class: "power"
+      device_class: "energy"
       state_class: "total"
       device:
         name: "WaterHeater"
@@ -576,7 +575,6 @@ mqtt:
       state_topic: "geappliances/WaterHeater/erd/0x40d0/value"
       value_template: "{{ (value|int(base=16)) }}"
       unit_of_measurement: "Gallons"
-      device_class: "volume"
       device:
         name: "WaterHeater"
         identifiers: "Heat Pump Water Heater"
@@ -587,7 +585,6 @@ mqtt:
       state_topic: "geappliances/WaterHeater/erd/0x411c/value"
       value_template: "{{ (value|int(base=16)) }}"
       unit_of_measurement: "tick"
-      device_class: "duration"
       device:
         name: "WaterHeater"
         identifiers: "Heat Pump Water Heater"

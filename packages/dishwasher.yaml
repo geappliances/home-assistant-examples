@@ -9,10 +9,21 @@ mqtt:
     - name: Delay Start Minutes
       unique_id: dishwasher_delaystartminutes
       command_topic: "geappliances/Dishwasher/erd/0x321a/write"
-      command_template: "{{ '%04x' % (value*10)|int(0) }}"
+      command_template: "{{ '%04x' % (value)|int(0) }}"
       state_topic: "geappliances/Dishwasher/erd/0x321a/value"
-      value_template: "{{ (value|int(base=16))/10 }}"
+      value_template: "{{ (value|int(base=16)) }}"
       unit_of_measurement: "minutes"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Cycle Selection
+      unique_id: dishwasher_cycleselection
+      command_topic: "geappliances/Dishwasher/erd/0x321b/write"
+      command_template: "{{ '%04x' % (value)|int(0) }}"
+      state_topic: "geappliances/Dishwasher/erd/0x321b/value"
+      value_template: "{{ (value|int(base=16)) }}"
       device:
         name: "Dishwasher"
         identifiers: "Dishwasher"
@@ -26,6 +37,50 @@ mqtt:
       unique_id: dishwasher_doorpocketlight
       command_topic: "geappliances/Dishwasher/erd/0x3108/write"
       state_topic: "geappliances/Dishwasher/erd/0x3108/value"
+      payload_off: "00"
+      payload_on: "01"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Steam
+      unique_id: dishwasher_steam
+      command_topic: "geappliances/Dishwasher/erd/0x321f/write"
+      state_topic: "geappliances/Dishwasher/erd/0x321f/value"
+      payload_off: "00"
+      payload_on: "01"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Bottle Wash
+      unique_id: dishwasher_bottlewash
+      command_topic: "geappliances/Dishwasher/erd/0x3220/write"
+      state_topic: "geappliances/Dishwasher/erd/0x3220/value"
+      payload_off: "00"
+      payload_on: "01"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Ultra Fresh
+      unique_id: dishwasher_ultrafresh
+      command_topic: "geappliances/Dishwasher/erd/0x3221/write"
+      state_topic: "geappliances/Dishwasher/erd/0x3221/value"
+      payload_off: "00"
+      payload_on: "01"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Rinse And Hold
+      unique_id: dishwasher_rinseandhold
+      command_topic: "geappliances/Dishwasher/erd/0x3260/write"
+      state_topic: "geappliances/Dishwasher/erd/0x3261/value"
       payload_off: "00"
       payload_on: "01"
       device:
@@ -48,7 +103,7 @@ mqtt:
         'Pause Cycle': '03'
         } %}
         {{ map[value] if value in map }}
-      state_topic: "geappliances/Dishwasher/erd/0x4020/value"
+      state_topic: "geappliances/Dishwasher/erd/0x3204/value"
       value_template: >
         {% set map = {
         '00': 'Idle',
@@ -62,6 +117,90 @@ mqtt:
         - "Start/Resume Cycle"
         - "Cancel Cycle"
         - "Pause Cycle"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Wash Temperature
+      unique_id: dishwasher_washtemperature
+      command_topic: "geappliances/Dishwasher/erd/0x321c/write"
+      command_template: >
+        {% set map = {
+        'Std': '00',
+        'Boost': '01',
+        'Sanitize': '02',
+        'Boost Santize': '03'
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/Dishwasher/erd/0x321c/value"
+      value_template: >
+        {% set map = {
+        '00': 'Std',
+        '01': 'Boost',
+        '02': 'Sanitize',
+        '03': 'Boost Santize',
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "Std"
+        - "Boost"
+        - "Sanitize"
+        - "Boost Santize"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Heated Dry
+      unique_id: dishwasher_heateddry
+      command_topic: "geappliances/Dishwasher/erd/0x321d/write"
+      command_template: >
+        {% set map = {
+        'Off': '00',
+        'Heated': '01',
+        'Max Dry': '02',
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/Dishwasher/erd/0x321d/value"
+      value_template: >
+        {% set map = {
+        '00': 'Off',
+        '01': 'Heated',
+        '02': 'Max Dry',
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "Off"
+        - "Heated"
+        - "Max Dry"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Wash Zone
+      unique_id: dishwasher_washzone
+      command_topic: "geappliances/Dishwasher/erd/0x321e/write"
+      command_template: >
+        {% set map = {
+        'Both': '00',
+        'Lower': '01',
+        'Upper': '02',
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/Dishwasher/erd/0x321e/value"
+      value_template: >
+        {% set map = {
+        '00': 'Both',
+        '01': 'Lower',
+        '02': 'Upper',
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "Off"
+        - "Lower"
+        - "Upper"
       device:
         name: "Dishwasher"
         identifiers: "Dishwasher"
@@ -454,7 +593,6 @@ mqtt:
       state_topic: "geappliances/Dishwasher/erd/0x3039/value"
       value_template: "{{ (value|int(base=16))/10 }}"
       unit_of_measurement: "Gallons"
-      device_class: "volume"
       device:
         name: "Dishwasher"
         identifiers: "Dishwasher"
@@ -541,6 +679,64 @@ mqtt:
         } %}
         {% set state = value|int(base=16)|string  %}
         {{ map[state] if state in map else 'error' }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Target Circulation Pump Speed
+      unique_id: dishwasher_targetcircpumpspeed
+      state_topic: "geappliances/Dishwasher/erd/0x3223/value"
+      value_template: "{{ value|int(base=16) }}"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Target Drain Pump Speed
+      unique_id: dishwasher_targetdrainpumpspeed
+      state_topic: "geappliances/Dishwasher/erd/0x3224/value"
+      value_template: "{{ value|int(base=16) }}"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Actual Circulation Pump Speed
+      unique_id: dishwasher_actualcircpumpspeed
+      state_topic: "geappliances/Dishwasher/erd/0x3225/value"
+      value_template: "{{ value|int(base=16) }}"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Actual Drain Pump Speed
+      unique_id: dishwasher_actualdrainpumpspeed
+      state_topic: "geappliances/Dishwasher/erd/0x3226/value"
+      value_template: "{{ value|int(base=16) }}"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Line Current
+      unique_id: dishwasher_linecurrent
+      state_topic: "geappliances/Dishwasher/erd/0x3227/value"
+      value_template: >
+        {% set current = (value[:4]|int(base=16))/1000 %}
+        {{ current }}
+      unit_of_measurement: "A"
+      device_class: "current"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Cycle Time Remaining
+      unique_id: dishwasher_cycletimeremaining
+      state_topic: "geappliances/Dishwasher/erd/0xd004/value"
+      value_template: "{{ value|int(base=16) }}"
       device:
         name: "Dishwasher"
         identifiers: "Dishwasher"
