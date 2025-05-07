@@ -1,0 +1,559 @@
+# - =========================================
+# - MQTT
+# - =========================================
+mqtt:
+  # - =========================================
+  # - MQTT Numbers
+  # - =========================================
+  number:
+    - name: Delay Start Minutes
+      unique_id: dishwasher_delaystartminutes
+      command_topic: "geappliances/Dishwasher/erd/0x321a/write"
+      command_template: "{{ '%04x' % (value*10)|int(0) }}"
+      state_topic: "geappliances/Dishwasher/erd/0x321a/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "minutes"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Switches
+  # - =========================================
+  switch:
+    - name: Door Pocket Light
+      unique_id: dishwasher_doorpocketlight
+      command_topic: "geappliances/Dishwasher/erd/0x3108/write"
+      state_topic: "geappliances/Dishwasher/erd/0x3108/value"
+      payload_off: "00"
+      payload_on: "01"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Select
+  # - =========================================
+  select:
+    - name: Remote Command
+      unique_id: dishwasher_remotecommand
+      command_topic: "geappliances/Dishwasher/erd/0x3204/write"
+      command_template: >
+        {% set map = {
+        'Idle': '00',
+        'Start/Resume Cycle': '01',
+        'Cancel Cycle': '02',
+        'Pause Cycle': '03'
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/Dishwasher/erd/0x4020/value"
+      value_template: >
+        {% set map = {
+        '00': 'Idle',
+        '01': 'Start/Resume Cycle',
+        '02': 'Cancel Cycle',
+        '03': 'Pause Cycle',
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "Idle"
+        - "Start/Resume Cycle"
+        - "Cancel Cycle"
+        - "Pause Cycle"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+  # - =========================================
+  # - MQTT Sensors
+  # - =========================================
+  sensor:
+    - name: Model Number
+      unique_id: dishwasher_modelnumber
+      state_topic: "geappliances/Dishwasher/erd/0x0001/value"
+      value_template: >
+        {%- set line = value %}
+        {%- set chars = " !'#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~" %}
+        {%- set n = 2 %}
+        {%- set ns = namespace(value='') %}
+        {%- for i in range(0, line | length, n) %}
+        {%- set c = chars[line[i:i+n] | int('', 16) - 32 ] %}
+        {%- if c is defined %}
+        {%- set ns.value = ns.value ~ c %}
+        {%- endif %}
+        {%- endfor %}
+        {{ ns.value[0:12] }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Serial Number
+      unique_id: dishawasher_serialnumber
+      state_topic: "geappliances/Dishwasher/erd/0x0002/value"
+      value_template: >
+        {%- set line = value %}
+        {%- set chars = " !'#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~" %}
+        {%- set n = 2 %}
+        {%- set ns = namespace(value='') %}
+        {%- for i in range(0, line | length, n) %}
+            {%- set c = chars[line[i:i+n] | int('', 16) - 32 ] %}
+            {%- if c is defined -%}
+                {%- if c != "_" -%}
+                    {%- set ns.value = ns.value ~ c -%}
+                {%- endif -%}
+            {%- endif -%}
+        {%- endfor %}
+        {{ ns.value }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Reset Count
+      unique_id: dishwasher_resetcount
+      state_topic: "geappliances/dishwasher/erd/0x0700/value"
+      value_template: "{{ (value|int(base=16)) }}"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Operating Mode
+      unique_id: dishwasher_operatingmode
+      state_topic: "geappliances/Dishwasher/erd/0x3001/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "Low Power",
+          "1": "Power Up",
+          "2": "Standby",
+          "3": "Delay Start",
+          "4": "Pause",
+          "5": "Run",
+          "6": "End Of Cycle",
+          "7": "Download",
+          "8": "Sensor Check",
+          "9": "Load Activation",
+          "10": "MC Only",
+          "11": "User Alert",
+          "12": "Lock",
+          "13": "CSM",
+          "14": "WiFi Binding",
+          "15": "Rinse Aid Level Selection",
+          "16": "Point of Entry Water Filter",
+          "17": "Sabbath Mode"
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Reminders
+      unique_id: dishwasher_reminders
+      state_topic: "geappliances/Dishwasher/erd/0x3003/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "No Reminders",
+          "1": "Clean Filter",
+          "2": "Add Rinse Aid",
+          "3": "Clean Filter + Add Rinse Aid",
+          "4": "Sanitized",
+          "5": "Clean Filter + Sanitized",
+          "6": "Add Rinse Aid + Sanitized",
+          "7": "Clean Filter + Add Rinse Aid + Sanitized",
+          "8": "Fill Salt Reservoir",
+          "9": "Fill Salt Reservoir + Clean Filter",
+          "10": "Fill Salt Reservoir + Add Rinse Aid",
+          "11": "Fill Salt Reservoir + Clean Filter + Add Rinse Aid",
+          "12": "Fill Salt Reservoir + Sanitized",
+          "13": "Fill Salt Reservoir + Clean Filter + Sanitized",
+          "14": "Fill Salt Reservoir + Add Rinse Aid + Sanitized",
+          "15": "Fill Salt Reservoir + Clean Filter + Add Rinse Aid + Sanitized",
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Fill Flow Rate
+      unique_id: dishwasher_fillflowrate
+      state_topic: "geappliances/Dishwasher/erd/0x3004/value"
+      value_template: >
+        {% set flowrate = value[:4]|int(base=16) %}
+        {{ flowrate }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Drain Flow Rate
+      unique_id: dishwasher_drainflowrate
+      state_topic: "geappliances/Dishwasher/erd/0x3004/value"
+      value_template: >
+        {% set flowrate = value[5:8]|int(base=16) %}
+        {{ flowrate }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Door Count
+      unique_id: dishwasher_doorcount
+      state_topic: "geappliances/Dishwasher/erd/0x3006/value"
+      value_template: "{{ value|int(base=16) }}"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Started Cycles
+      unique_id: dishwasher_startedcycles
+      state_topic: "geappliances/Dishwasher/erd/0x3009/value"
+      value_template: >
+        {% set cycles = value[:4]|int(base=16) %}
+        {{ cycles }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Completed Cycles
+      unique_id: dishwasher_completedcycles
+      state_topic: "geappliances/Dishwasher/erd/0x3009/value"
+      value_template: >
+        {% set cycles = value[5:8]|int(base=16) %}
+        {{ cycles }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Power Cycles
+      unique_id: dishwasher_powercycles
+      state_topic: "geappliances/Dishwasher/erd/0x3009/value"
+      value_template: >
+        {% set cycles = value[9:12]|int(base=16) %}
+        {{ cycles }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Delay Minutes Remaining
+      unique_id: dishwasher_delayminutesremaining
+      state_topic: "geappliances/Dishwasher/erd/0x300d/value"
+      value_template: "{{ value|int(base=16) }}"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Cycle Indication
+      unique_id: dishwasher_cycleindication
+      state_topic: "geappliances/Dishwasher/erd/0x300e/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "No Change",
+          "1": "Prewash",
+          "2": "Sensing",
+          "3": "Main Wash",
+          "4": "Drying",
+          "5": "Sanitizing",
+          "6": "Turbidity Cal",
+          "7": "Diverter Cal",
+          "8": "Pause",
+          "9": "Rinsing",
+          "10": "Prewash 1",
+          "11": "Final Rinse",
+          "12": "End Prewash 1",
+          "13": "Auto Hot Start 1",
+          "14": "Auto Hot Start 2",
+          "15": "Auto Hot Start 3",
+          "16": "Final Rinse Fill",
+          "17": "Cycle Inactive",
+          "18": "End Of Cycle"
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Inlet Flow Rate
+      unique_id: dishwasher_inletflowrate
+      state_topic: "geappliances/Dishwasher/erd/0x3015/value"
+      value_template: >
+        {% set flowrate = value[:4]|int(base=16) %}
+        {{ flowrate }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Failed Drain Attempts
+      unique_id: dishwasher_faileddrainattempts
+      state_topic: "geappliances/Dishwasher/erd/0x3016/value"
+      value_template: >
+        {% set count = value[:2]|int(base=16) %}
+        {{ count }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Max Failed Drain Attempts
+      unique_id: dishwasher_maxfaileddrainattempts
+      state_topic: "geappliances/Dishwasher/erd/0x3016/value"
+      value_template: >
+        {% set count = value[3:4]|int(base=16) %}
+        {{ count }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Tub Light Brightness
+      unique_id: dishwasher_tublight
+      state_topic: "geappliances/Dishwasher/erd/0x3017/value"
+      value_template: "{{ value|int(base=16) }}"
+      unit_of_measurement: "%"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Leak Detection
+      unique_id: dishwasher_leakdetection
+      state_topic: "geappliances/Dishwasher/erd/0x301d/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "No Leak Detected",
+          "1": "Leak Detected"
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Wash Pump Run Time
+      unique_id: dishwasher_washpumpruntime
+      state_topic: "geappliances/Dishwasher/erd/0x3020/value"
+      value_template: >
+        {% set time = value[:8]|int(base=16) %}
+        {{ time }}
+      unit_of_measurement: "seconds"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Drain Pump Run Time
+      unique_id: dishwasher_drainpumpruntime
+      state_topic: "geappliances/Dishwasher/erd/0x3020/value"
+      value_template: >
+        {% set time = value[9:16]|int(base=16) %}
+        {{ time }}
+      unit_of_measurement: "seconds"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Heater Run Time
+      unique_id: dishwasher_heaterruntime
+      state_topic: "geappliances/Dishwasher/erd/0x3020/value"
+      value_template: >
+        {% set time = value[17:24]|int(base=16) %}
+        {{ time }}
+      unit_of_measurement: "seconds"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Fan Run Time
+      unique_id: dishwasher_fanruntime
+      state_topic: "geappliances/Dishwasher/erd/0x3020/value"
+      value_template: >
+        {% set time = value[25:32]|int(base=16) %}
+        {{ time }}
+      unit_of_measurement: "seconds"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Water Temperature
+      unique_id: dishwasher_watertemperature
+      state_topic: "geappliances/Dishwasher/erd/0x3035/value"
+      value_template: "{{ value|int(base=16) }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Average Turbidity
+      unique_id: dishwasher_avgturbidity
+      state_topic: "geappliances/Dishwasher/erd/0x3036/value"
+      value_template: "{{ value|int(base=16) }}"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Door Status
+      unique_id: dishwasher_doorstatus
+      state_topic: "geappliances/Dishwasher/erd/0x3037/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "Open",
+          "1": "Closed"
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Rinse Aid
+      unique_id: dishwasher_rinseaid
+      state_topic: "geappliances/Dishwasher/erd/0x3038/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "Not Empty",
+          "1": "Empty"
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Water Volume
+      unique_id: dishwasher_watervolume
+      state_topic: "geappliances/Dishwasher/erd/0x3039/value"
+      value_template: "{{ (value|int(base=16))/10 }}"
+      unit_of_measurement: "Gallons"
+      device_class: "volume"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Dry Heater Temperature
+      unique_id: dishwasher_dryheatertemperature
+      state_topic: "geappliances/Dishwasher/erd/0x304f/value"
+      value_template: "{{ value|int(base=16) }}"
+      unit_of_measurement: "°F"
+      device_class: "temperature"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Flood Detection
+      unique_id: dishwasher_flooddetection
+      state_topic: "geappliances/Dishwasher/erd/0x3085/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "No Flood Detected",
+          "1": "Flood Detected"
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Remote Start Enabled
+      unique_id: dishwasher_remotestartenabled
+      state_topic: "geappliances/Dishwasher/erd/0x3087/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "Not enabled",
+          "1": "Enabled"
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Line Voltage
+      unique_id: dishwasher_linevoltage
+      state_topic: "geappliances/Dishwasher/erd/0x3107/value"
+      value_template: "{{ value|int(base=16) }}"
+      unit_of_measurement: "V"
+      device_class: "voltage"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Critical Fault
+      unique_id: dishwasher_criticalfault
+      state_topic: "geappliances/Dishwasher/erd/0x310a/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "No Fault",
+          "1": "Fault Detected"
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Non-Critical Fault
+      unique_id: dishwasher_noncriticalfault
+      state_topic: "geappliances/Dishwasher/erd/0x310b/value"
+      device_class: "enum"
+      value_template: >
+        {% set map = {
+          "0": "No Fault",
+          "1": "Fault Detected"
+        } %}
+        {% set state = value|int(base=16)|string  %}
+        {{ map[state] if state in map else 'error' }}
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
+
+    - name: Energy Used
+      unique_id: dishwasher_cumulativeenergy
+      state_topic: "geappliances/Dishwasher/erd/0xd030/value"
+      value_template: "{{ (value|int(base=16))/1000 }}"
+      unit_of_measurement: "kWh"
+      device_class: "energy"
+      state_class: "total"
+      device:
+        name: "Dishwasher"
+        identifiers: "Dishwasher"
+        manufacturer: "GE Appliances"
