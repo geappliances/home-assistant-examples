@@ -1,0 +1,66 @@
+- id: 8da6a938b2cf459c82cbe091b16b4bc1
+  alias: Hot water available servo gauge
+  description: ''
+  triggers:
+  - entity_id: input_number.servo_control
+    trigger: state
+  - entity_id: sensor.waterheater_available_hot_water
+    trigger: state
+  actions:
+  - data_template:
+      level: '{{ trigger.to_state.state | int }}'
+    action: esphome.hotwaterservo_control_servo
+- id: '1712238053028'
+  alias: Hot Water time limit
+  description: Turn off hot water recirculation after 10 minutes
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: ceaaa4aef2d1b29f7a30a051f5de57a1
+    entity_id: a4489f09856c128274c06113d23501bd
+    domain: switch
+    for:
+      hours: 0
+      minutes: 10
+      seconds: 0
+  condition: []
+  action:
+  - type: turn_off
+    device_id: ceaaa4aef2d1b29f7a30a051f5de57a1
+    entity_id: a4489f09856c128274c06113d23501bd
+    domain: switch
+  mode: single
+- id: '1721337414563'
+  alias: Solar power surplus
+  description: House solar makes more than 3kw
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.envoy_121352020793_current_power_production
+    above: 3
+  condition: []
+  action:
+  - service: number.set_value
+    metadata: {}
+    data:
+      value: '41'
+    target:
+      entity_id: number.waterheater_current_local_energy_cost
+  mode: single
+- id: '1721337562479'
+  alias: Solar inactive
+  description: House solar makes less than 1kw
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.envoy_121352020793_current_power_production
+    below: 1
+  condition: []
+  action:
+  - service: number.set_value
+    metadata: {}
+    data:
+      value: '0'
+    target:
+      entity_id: number.waterheater_current_local_energy_cost
+  mode: single

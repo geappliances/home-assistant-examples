@@ -8,6 +8,47 @@
       value_template: >
         {{ (states('sensor.waterheater_mid_tank_temp')|float(0) + states('sensor.waterheater_top_tank_temp')|float(0))/2 }}
 
+    waterheater_averageheatingpower:
+      friendly_name: "Water Heater Average Heating Power"
+      unique_id: "waterheater_averageheatingpower"
+      unit_of_measurement: "watts"
+      device_class: "power"
+      value_template: >
+        {% set tank_mass_kg = states('sensor.waterheater_tank_size')|float(0) * 3.79 %}
+        {% set speciifc_heat_kJkgC = 1 %}
+        {% set temperature_change_C = states('sensor.waterheater_averagetanktemperature')|float(0) -  states('sensor.waterheater_average_tank_temperature_one_hour_ago')|float(0)  %}
+        {% set kJperhour_to_Watts = 1000 / 60 / 60 %}
+        {% set heatingrate_Watts = tank_mass_kg * speciifc_heat_kJkgC * temperature_change_C * kJperhour_to_Watts %}
+        {{ heatingrate_Watts|round(0) }}
+
+    waterheater_averageinputpower:
+      friendly_name: "Water Heater Average Input Power"
+      unique_id: "waterheater_averageinputpower"
+      unit_of_measurement: "watts"
+      device_class: "power"
+      value_template: >
+        {% set energy_input_Watts = (states('sensor.waterheater_energy_used')|float(0) - states('sensor.waterheater_total_kwh_one_hour_ago')|float(0))*1000 %}
+        {{ energy_input_Watts|round(0) }}
+
+    waterheater_averagecop:
+      friendly_name: "Water Heater Average COP"
+      unique_id: "waterheater_averagecop"
+      unit_of_measurement: ""
+      value_template: >
+        {% set average_input_power = states('sensor.waterheater_averageinputpower')|float(0) %}
+        {% if average_input_power > 0 -%}
+            {{ max((states('sensor.waterheater_averageheatingpower')|float(0) / average_input_power)|round(2),0) }}
+        {%- else -%}
+            0
+        {%- endif %}
+
+    waterheater_superheat:
+      friendly_name: "Water Heater Superheat"
+      unique_id: "waterheater_superheat"
+      unit_of_measurement: "°F"
+      value_template: >
+        {{ (states('sensor.waterheater_evap_out_temp')|float(0)) - (states('sensor.waterheater_evap_in_temp')|float(0)) }}
+
     waterheater_chargestate:
       friendly_name: "Water Heater Charge State"
       unique_id: "waterheater_chargeState"
