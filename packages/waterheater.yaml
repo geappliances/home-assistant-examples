@@ -158,6 +158,33 @@ mqtt:
         identifiers: "Heat Pump Water Heater"
         manufacturer: "GE Appliances"
 
+    - name: Shutoff Valve Setting
+      unique_id: shutoff_valve
+      command_topic: "geappliances/WaterHeater/erd/0x4223/write"
+      command_template: >
+        {% set map = {
+        'Idle': '00',
+        'Open': '01',
+        'Shut': '02'
+        } %}
+        {{ map[value] if value in map }}
+      state_topic: "geappliances/WaterHeater/erd/0x4222/value"
+      value_template: >
+        {% set map = {
+        '00': 'Not fitted',
+        '01': 'Open',
+        '02': 'Shut',
+        '03': 'Changing'
+        } %}
+        {{ map[value] if value in map }}
+      options:
+        - "Open"
+        - "Shut"
+      device:
+        name: "WaterHeater"
+        identifiers: "Heat Pump Water Heater"
+        manufacturer: "GE Appliances"
+
     # - name: Temperature Units
     #   unique_id: temp_units
     #   command_topic: "geappliances/WaterHeater/erd/0x0007/write"
