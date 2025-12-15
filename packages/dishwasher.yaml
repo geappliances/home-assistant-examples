@@ -198,7 +198,7 @@ mqtt:
         } %}
         {{ map[value] if value in map }}
       options:
-        - "Off"
+        - "Both"
         - "Lower"
         - "Upper"
       device:
